@@ -51,6 +51,27 @@ void liberaSisLin (SistLinear_t *SL)
 }
 
 
+// /***********************
+//  * Função que gera os coeficientes de um sistema linear k-diagonal
+//  * i,j: coordenadas do elemento a ser calculado (0<=i,j<n)
+//  * k: numero de diagonais da matriz A
+//  ***********************/
+inline double generateRandomA( unsigned int i, unsigned int j, unsigned int k )
+{
+  static double invRandMax = 1.0 / (double)RAND_MAX;
+  return ( (i==j)?(double)(k<<1) : 1.0 )  * (double)rand() * invRandMax;
+}
+
+// /***********************
+//  * Função que gera os termos independentes de um sistema linear k-diagonal
+//  * k: numero de diagonais da matriz A
+//  ***********************/
+inline double generateRandomB( unsigned int k )
+{
+  static double invRandMax = 1.0 / (double)RAND_MAX;
+  return (double)(k<<2) * (double)rand() * invRandMax;
+}
+
 /*!
   \brief Cria coeficientes e termos independentes do SL
   *
@@ -59,21 +80,20 @@ void liberaSisLin (SistLinear_t *SL)
      comSolucao, eqNula, eqProporcional, eqCombLinear, hilbert 
   \param coef_max Maior valor para coeficientes e termos independentes
 */
-void iniSisLin (SistLinear_t *SL, real_t coef_max)
-{
+void iniSisLin (SistLinear_t *SL, unsigned int nDiagonais){
   unsigned int n = SL->n;
-  // para gerar valores no intervalo [0,coef_max]
-  real_t invRandMax = ((real_t)coef_max / (real_t)RAND_MAX);
+  // inicializando sequencia de numeros aleatorios
+  srand(20222);
 
   // inicializa vetor b
   for (unsigned int i=0; i<n; ++i) {
-    SL->b[i] = (real_t)rand() * invRandMax;
+    SL->b[i] = generateRandomB(nDiagonais);
   }
     
   // inicializa a matriz A
   for (unsigned int i=0; i<n; ++i) {
     for (unsigned int j=0; j<n; ++j)  {
-      SL->A[i][j] = (real_t)rand() * invRandMax;
+      SL->A[i][j] = generateRandomA(i,j,nDiagonais);
     }
   }
   

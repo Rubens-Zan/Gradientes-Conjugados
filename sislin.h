@@ -22,7 +22,7 @@ typedef struct {
 // Alocaçao e desalocação de matrizes
 SistLinear_t* alocaSisLin (unsigned int n);
 void liberaSisLin (SistLinear_t *SL);
-void iniSisLin (SistLinear_t *SL, real_t coef_max);
+void iniSisLin (SistLinear_t *SL, unsigned int nDiagonais);
 
 // Leitura e impressão de sistemas lineares
 SistLinear_t *lerSisLin ();
