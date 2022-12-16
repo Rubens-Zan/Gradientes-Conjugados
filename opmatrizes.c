@@ -22,7 +22,6 @@ void transporMat(double **matA,double **matT, int n){
 		for(int j=0;j < n;++j){
 			matT[i][j]=matA[j][i];  
 		}
-	return matT;
 }
 
 void geraMatrizIdentidade(double **m,int n){
