@@ -1,25 +1,26 @@
-    CC     = gcc -g
-    CFLAGS =
-    LFLAGS = -lm
+# Autor: Rubens Laszlo
+# Data: 12/2022
+# GRR 20206147 
 
-      PROG = main
-      OBJS = utils.o \
-             sislin.o \
-             opmatrizes.o \
-             $(PROG).o
 
-.PHONY:  clean purge all
+CC = gcc
+EXEC = CG_SOLVER
+CFLAG = -Wall -std=c99
+MODULOS = opmatrizes \
+	sislin \
+	utils 
+ 
+OBJETOS = main.o $(addsuffix .o,$(MODULOS))
 
-%.o: %.c %.h utils.h sislin.h opmatrizes.h
-	$(CC) -c $(CFLAGS) $<
+.PHONY: all clean
 
-$(PROG):  $(OBJS)
-	$(CC) -o $@ $^ $(LFLAGS)
+all: CGSOLVER
+
+CGSOLVER: $(OBJETOS)
+	$(CC) -o $(EXEC) $(OBJETOS) $(ALLEGRO) $(CFLAG)
 
 clean:
-	@rm -f *~ *.bak
+	$(RM) $(OBJETOS)
 
-purge:  clean
-	@rm -f *.o core a.out
-	@rm -f $(PROG)
-
+purge:
+	$(RM) $(OBJETOS) $(EXEC)
