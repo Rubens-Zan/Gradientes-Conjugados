@@ -138,7 +138,6 @@ double calcBeta(double *resid,double *residAnt, int n){
  * @return double - Proximo x calculado
  */
 void calcProxX(double **proxX,double **xAnt,double a, double **p, int n){
-    double proxX[n+1][n+1];
     for (int i =0;i < n;++i)
       for (int j=0;j<n;++j)
         proxX[i][j] = xAnt[i][j] + a * p[i][j]; 

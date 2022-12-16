@@ -17,8 +17,7 @@ void aplicaX(double *dest, double a, double *x, double *b, int n)
 		dest[i]=a*x[i]+b[i];
 }
 
-double **transporMat(double **matA, int n){
-	double matT[n+1][n+1];
+void transporMat(double **matA,double **matT, int n){
 	for(int i=0;i < n ;++i)
 		for(int j=0;j < n;++j){
 			matT[i][j]=matA[j][i];  
@@ -26,14 +25,13 @@ double **transporMat(double **matA, int n){
 	return matT;
 }
 
-double **geraMatrizIdentidade(int n){
-	double matIdent[n+1][n+1];  
+void geraMatrizIdentidade(double **m,int n){
 	for(int i = 0; i < n;i++) {
 		for(int j = 0; j < n;j++) {
 			if(i == j) {
-				matIdent[i][j]=1;
+				m[i][j]=1;
 			} else {
-				matIdent[i][j]=0;
+				m[i][j]=0;
 			}
 		}
 	}

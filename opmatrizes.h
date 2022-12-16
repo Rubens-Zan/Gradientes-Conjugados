@@ -1,3 +1,3 @@
 double produtoEscalar(double *vetA, double *vetB, int n);
-double **transporMat(double **matA, int n); 
-double **geraMatrizIdentidade(int n); 
+void transporMat(double **matA,double **matT, int n);
+void geraMatrizIdentidade(double **m,int n); 
