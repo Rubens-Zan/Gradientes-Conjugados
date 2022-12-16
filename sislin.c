@@ -104,17 +104,16 @@ void iniSisLin (SistLinear_t *SL, unsigned int nDiagonais){
 /**
  * @brief Calcula a proxima direcao de busca p<i>
  * p<i> = r<i> + beta<i-1> * p<i-1> 
+ * @param proxDir
  * @param resid - Residuo calculado r<i>
  * @param beta - Beta calculado beta<i-1>
  * @param direcAnterior - Direcao anterior calculada 
  * @return double 
  */
-double **calcProxDirecBusca(double **resid, double beta,double **direcAnterior, int n){
-    double proxDir[n+1][n+1];
+void calcProxDirecBusca(double **proxDir,double **resid, double beta,double **direcAnterior, int n){
     for (int i=0; i < n;++i)
-        for(int j=0;j < n;++j)
-            proxDir[i][j] = resid[i][j] + beta * direcAnterior[i][j]; 
-    return proxDir; 
+      for(int j=0;j < n;++j)
+        proxDir[i][j] = resid[i][j] + beta * direcAnterior[i][j]; 
 }
 
 
@@ -132,17 +131,17 @@ double calcBeta(double *resid,double *residAnt, int n){
 /**
  * @brief Calcula o proximo x<i>
  * x<i> = x<i-1> + a <i> * p<i-1> 
+ * @param proxX  
  * @param xAnt - Valor do x<i-1> anterior
  * @param a - valor do a<i-1> anterior
  * @param p - valor da direção de busca p<i-1)> anterior
  * @return double - Proximo x calculado
  */
-double **calcProxX(double **xAnt, double a, double **p, int n){
-    double xAtual[n+1][n+1];
+void calcProxX(double **proxX,double **xAnt,double a, double **p, int n){
+    double proxX[n+1][n+1];
     for (int i =0;i < n;++i)
-        for (int j=0;j<n;++j)
-            xAtual[i][j] = xAnt[i][j] + a * p[i][j]; 
-    return xAtual; 
+      for (int j=0;j<n;++j)
+        proxX[i][j] = xAnt[i][j] + a * p[i][j]; 
 }
 
 

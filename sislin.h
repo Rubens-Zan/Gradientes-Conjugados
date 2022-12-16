@@ -27,8 +27,8 @@ SistLinear_t *lerSisLin ();
 void prnSisLin (SistLinear_t *SL);
 void prnVetor (real_t *vet, unsigned int n);
 
-double **calcProxX(double **xAnt, double a, double **p, int n);
-double **calcProxDirecBusca(double **resid, double beta,double **direcAnterior, int n); 
+void calcProxX(double **proxX,double **xAnt,double a, double **p, int n);
+void calcProxDirecBusca(double **proxDir,double **resid, double beta,double **direcAnterior, int n);
 
 
 #endif // __SISLIN_H__

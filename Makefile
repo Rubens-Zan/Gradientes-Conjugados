@@ -5,12 +5,12 @@
       PROG = labSisLin
       OBJS = utils.o \
              sislin.o \
-             Metodos.o \
+             opmatrizes.o \
              $(PROG).o
 
 .PHONY:  clean purge all
 
-%.o: %.c %.h utils.h sislin.h
+%.o: %.c %.h utils.h sislin.h opmatrizes.h
 	$(CC) -c $(CFLAGS) $<
 
 $(PROG):  $(OBJS)
