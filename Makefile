@@ -17,7 +17,7 @@ OBJETOS = main.o $(addsuffix .o,$(MODULOS))
 all: CGSOLVER
 
 CGSOLVER: $(OBJETOS)
-	$(CC) -o $(EXEC) $(OBJETOS) $(ALLEGRO) $(CFLAG)
+	$(CC) -o $(EXEC) $(OBJETOS) $(CFLAG)
 
 clean:
 	$(RM) $(OBJETOS)
