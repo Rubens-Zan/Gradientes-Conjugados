@@ -2,7 +2,7 @@
     CFLAGS =
     LFLAGS = -lm
 
-      PROG = labSisLin
+      PROG = main
       OBJS = utils.o \
              sislin.o \
              opmatrizes.o \
