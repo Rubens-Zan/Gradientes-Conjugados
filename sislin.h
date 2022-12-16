@@ -17,8 +17,6 @@ typedef struct {
   unsigned int n; // tamanho do SL
 } SistLinear_t;
 
-
-
 // Alocaçao e desalocação de matrizes
 SistLinear_t* alocaSisLin (unsigned int n);
 void liberaSisLin (SistLinear_t *SL);
@@ -28,6 +26,10 @@ void iniSisLin (SistLinear_t *SL, unsigned int nDiagonais);
 SistLinear_t *lerSisLin ();
 void prnSisLin (SistLinear_t *SL);
 void prnVetor (real_t *vet, unsigned int n);
+
+double **calcProxX(double **xAnt, double a, double **p, int n);
+double **calcProxDirecBusca(double **resid, double beta,double **direcAnterior, int n); 
+
 
 #endif // __SISLIN_H__
 

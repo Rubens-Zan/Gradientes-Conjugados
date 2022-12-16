@@ -99,6 +99,70 @@ void iniSisLin (SistLinear_t *SL, unsigned int nDiagonais){
   
 }
 
+/***********************************************************************/
+
+/**
+ * @brief Calcula a proxima direcao de busca p<i>
+ * p<i> = r<i> + beta<i-1> * p<i-1> 
+ * @param resid - Residuo calculado r<i>
+ * @param beta - Beta calculado beta<i-1>
+ * @param direcAnterior - Direcao anterior calculada 
+ * @return double 
+ */
+double **calcProxDirecBusca(double **resid, double beta,double **direcAnterior, int n){
+    double proxDir[n+1][n+1];
+    for (int i=0; i < n;++i)
+        for(int j=0;j < n;++j)
+            proxDir[i][j] = resid[i][j] + beta * direcAnterior[i][j]; 
+    return proxDir; 
+}
+
+
+/**
+ * @brief Calcula beta com base no residuo atual e no anterior
+ * 
+ * @param resid 
+ * @param residAnt 
+ * @return double 
+ */
+double calcBeta(double *resid,double *residAnt, int n){
+    
+}
+
+/**
+ * @brief Calcula o proximo x<i>
+ * x<i> = x<i-1> + a <i> * p<i-1> 
+ * @param xAnt - Valor do x<i-1> anterior
+ * @param a - valor do a<i-1> anterior
+ * @param p - valor da direção de busca p<i-1)> anterior
+ * @return double - Proximo x calculado
+ */
+double **calcProxX(double **xAnt, double a, double **p, int n){
+    double xAtual[n+1][n+1];
+    for (int i =0;i < n;++i)
+        for (int j=0;j<n;++j)
+            xAtual[i][j] = xAnt[i][j] + a * p[i][j]; 
+    return xAtual; 
+}
+
+
+/**
+ * @brief Metodo resolvedor de sistemas lineares pelo metodo de gradiente conjugado
+ * 
+ * @param A  - MATRIZ A SER TESTADA
+ * @param b - Coeficiente de solucao
+ * @param x -  Solucao do sistema
+ * @param M  - Matriz precondicionadora 
+ * @param maxIt - NUMERO MAXIMO DE ITERACOES
+ * @param tol - TOLERANCIA
+ * @param n  - DIMENSAO 
+ * @return int - NUMERO DE ITERACOES
+ */
+int gradienteConjugado(double *A, double *b, double *x, double *M, int maxIt, double tol, int n){
+
+}
+
+/***********************************************************************/
 
 void prnSisLin (SistLinear_t *SL)
 {
@@ -123,4 +187,5 @@ void prnVetor (real_t *v, unsigned int n)
   printf ("\n\n");
 
 }
+
 

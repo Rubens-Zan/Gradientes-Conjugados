@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "funcAux.h"
+#include "utils.h"
 #include "sislin.h"
 
 int main(int argc, char **argv){
