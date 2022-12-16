@@ -17,18 +17,6 @@ typedef struct {
   unsigned int n; // tamanho do SL
 } SistLinear_t;
 
-// Alocaçao e desalocação de matrizes
-SistLinear_t* alocaSisLin (unsigned int n);
-void liberaSisLin (SistLinear_t *SL);
-void iniSisLin (SistLinear_t *SL, unsigned int nDiagonais);
-
-// Leitura e impressão de sistemas lineares
-SistLinear_t *lerSisLin ();
-void prnSisLin (SistLinear_t *SL);
-void prnVetor (real_t *vet, unsigned int n);
-
-void calcProxX(double **proxX,double **xAnt,double a, double **p, int n);
-void calcProxDirecBusca(double **proxDir,double **resid, double beta,double **direcAnterior, int n);
 
 // /***********************
 //  * Função que gera os coeficientes de um sistema linear k-diagonal
@@ -50,6 +38,20 @@ inline double generateRandomB( unsigned int k )
   static double invRandMax = 1.0 / (double)RAND_MAX;
   return (double)(k<<2) * (double)rand() * invRandMax;
 }
+
+// Alocaçao e desalocação de matrizes
+SistLinear_t* alocaSisLin (unsigned int n);
+void liberaSisLin (SistLinear_t *SL);
+void iniSisLin (SistLinear_t *SL, unsigned int nDiagonais);
+
+// Leitura e impressão de sistemas lineares
+SistLinear_t *lerSisLin ();
+void prnSisLin (SistLinear_t *SL);
+void prnVetor (real_t *vet, unsigned int n);
+
+void calcProxX(double **proxX,double **xAnt,double a, double **p, int n);
+void calcProxDirecBusca(double **proxDir,double **resid, double beta,double **direcAnterior, int n);
+
 
 
 #endif // __SISLIN_H__
