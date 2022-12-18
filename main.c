@@ -22,7 +22,7 @@ int main(int argc, char **argv)
     double **xAnt = alocarMatriz(n+1, 2);
     double **p = alocarMatriz(n+1, 2);
     double **p2 = alocarMatriz(n+1, 2);
-    double alpha = (73/331)*(-1); 
+    double alpha = -0.2205; 
     
     xAnt[0][0] = 0.2356;
     xAnt[1][0] = 0.3384;
