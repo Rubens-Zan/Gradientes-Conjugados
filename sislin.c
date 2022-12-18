@@ -113,13 +113,15 @@ double calcAlpha(double **resid,double **A, double **p, int n){
   double alpha = 0; 
   double **residTransp=alocarMatriz(1,n+1); // matriz de residuo transposta
   double **pTransp = alocarMatriz(1,n+1); // matriz de direcao transposta
-  
   transporMat(resid, residTransp, n, 1);
   transporMat(p, pTransp, n, 1);
   
   double **resMultResult = multMat(resid,residTransp,n,1,1,n); // resid * resid^T 
   double **multResulPtxA = multMat(pTransp,A,1,n,n,n); // p^T * A
   double  **multResulPxAxP =  multMat(multResulPtxA,p,1,n,n,1); // (p^T * A) * p
+
+  printf("resid * resid^T %f\n",resMultResult[0][0]);
+  printf("(p^T * A) * p %f\n",multResulPxAxP[0][0]);
 
   alpha = resMultResult[0][0] /  multResulPxAxP[0][0]; 
 
