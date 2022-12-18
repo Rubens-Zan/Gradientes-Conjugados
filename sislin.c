@@ -175,9 +175,33 @@ void calcProxX(double **proxX,double **xAnt,double alpha, double **p, int n){
         proxX[i][j] = xAnt[i][j] + alpha * p[i][j]; 
 }
 
-
-void calcResiduo(){
+/**
+ * @brief 
+ * r<k> = r<k-1> -alpha<k-1> * A * p<k-1>
+ * @param residuoAnterior 
+ * @param alpha 
+ * @param A 
+ * @param p 
+ * @param residuo 
+ * @param n - dimensao do sistema linear
+ */
+void calcResiduo(double **residuoAnterior, double alpha, double **A, double **p, double ** residuo,int n){
   // TODO
+  double matAlphaxA[n+1][n+1];
+
+  for (int i=0;i < n;++i){
+    for (int j=0;j<n;++j){
+      matAlphaxA[i][j] = alpha * A[i][j]; // alpha * A
+    }
+  }
+  double **multAlphaxAxp =multMat(matAlphaxA, p,n,n,n,1); // (alpha * A) * p  
+
+  for (int i=0;i < n;++i)
+    for(int j=0;j < 1;++j){
+      residuo[i][j] = residuoAnterior[i][j]-multAlphaxAxp[i][j];  
+    }
+
+  liberarMatriz(multAlphaxAxp); 
 }
 
 /**
@@ -243,6 +267,5 @@ void prnMat (double **mat, unsigned int n, unsigned int m){
       printf(" %f",mat[i][j]);
     printf("\n");
   }
-
 }
 

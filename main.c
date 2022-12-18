@@ -27,15 +27,15 @@ int main(int argc, char **argv)
     xAnt[0][0] = 0.2356;
     xAnt[1][0] = 0.3384;
 
-    p[0][0] = -0.3511;
-    p[1][0] = 0.7229;
+    p[0][0] = -8;
+    p[1][0] = -3;
 
 
-    resid[0][0] = -0.2810;
-    resid[0][1] = 0.7492;
+    // resid[0][0] = -0.2810;
+    // resid[0][1] = 0.7492;
 
     residAnt[0][0] = -8;
-    residAnt[0][1] = -3;
+    residAnt[1][0] = -3;
     A[0][0] = 4;
     A[0][1] = 1;
     A[1][0] = 1;
@@ -44,8 +44,10 @@ int main(int argc, char **argv)
     // printf("alpha: %f \n", calcAlpha(residAnt, A, residAnt, n)); OK
     // calcProxX(proxX,xAnt,0.4122, p, n); OK
     // prnMat(proxX, n,1); OK 
-    calcProxDirecBusca(p2,resid, 0.0088,p, n);
-    prnMat(proxX, n, 1); 
+    // calcProxDirecBusca(p2,resid, 0.0088,p, n); OK
+    // prnMat(p2, n, 1); OK
+    calcResiduo(residAnt, -73/331, A, p, resid,n);
+    prnMat(resid, n, 1); 
 
     //////
 

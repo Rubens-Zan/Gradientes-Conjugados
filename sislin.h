@@ -28,7 +28,9 @@ double calcBeta(double **resid,double **residAnt, int n);
 double calcAlpha(double **resid,double **A, double **p, int n);
 void calcProxX(double **proxX,double **xAnt,double alpha, double **p, int n); 
 void calcProxDirecBusca(double **proxDir,double **resid, double beta,double **direcAnterior, int n); 
+void calcResiduo(double **residuoAnterior, double alpha, double **A, double **p, double ** residuo,int n);
 //
+
 void prnMat (double **mat, unsigned int n, unsigned int m);
 // Leitura e impressão de sistemas lineares
 SistLinear_t *lerSisLin ();
