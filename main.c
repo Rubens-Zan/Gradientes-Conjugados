@@ -11,7 +11,7 @@ int main(int argc, char **argv)
     SistLinear_t *SL = alocaSisLin(comando->dimensao);
     iniSisLin(SL, comando->nDiagonais);
 
-    prnSisLin(SL);
+    // prnSisLin(SL);
 
     // TESTANDO FUNCOES
     int n = 2;

@@ -120,8 +120,10 @@ double calcAlpha(double **resid,double **A, double **p, int n){
   double **multResulPtxA = multMat(pTransp,A,1,n,n,n); // p^T * A
   double  **multResulPxAxP =  multMat(multResulPtxA,p,1,n,n,1); // (p^T * A) * p
 
-  printf("resid * resid^T %f\n",resMultResult[0][0]);
-  printf("(p^T * A) * p %f\n",multResulPxAxP[0][0]);
+  printf("resid * resid^T : %f\n",resMultResult[0][0]);
+  printf("multResulPtxA : ");
+  prnMat(multResulPtxA,1,n);
+  printf("(p^T * A) * p:  %f\n",multResulPxAxP[0][0]);
 
   alpha = resMultResult[0][0] /  multResulPxAxP[0][0]; 
 
@@ -239,3 +241,13 @@ void prnVetor (real_t *v, unsigned int n)
   printf ("\n\n");
 
 }
+
+void prnMat (double **mat, unsigned int n, unsigned int m){
+  for (unsigned int i; i < n;++i){
+    for (unsigned int j; j < m;++j)
+      printf(" %f",mat[i][j]);
+    printf("\n");
+  }
+
+}
+
