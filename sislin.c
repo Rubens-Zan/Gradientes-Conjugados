@@ -193,10 +193,7 @@ void calcResiduo(double **residuoAnterior, double alpha, double **A, double **p,
       matAlphaxA[i][j] = alpha * A[i][j]; // alpha * A
     }
   }
-  printf("\n multAlphaxAxp: \n"); 
   double **multAlphaxAxp =multMat(matAlphaxA, p,n,n,n,1); // (alpha * A) * p  
-  prnMat(multAlphaxAxp,n,1); 
-  printf("\n");
 
   for (int i=0;i < n;++i)
     for(int j=0;j < 1;++j){
@@ -205,7 +202,6 @@ void calcResiduo(double **residuoAnterior, double alpha, double **A, double **p,
 
   liberarMatriz(matAlphaxA); 
   liberarMatriz(multAlphaxAxp); 
-
 }
 
 
@@ -249,7 +245,6 @@ int gradienteConjugado(SistLinear_t *SL, double **x, double *M, int maxIt, doubl
     double **xAnt = alocarMatriz(SL->n+1,2); // matriz de direcao
     int it;
     
-    inicializarMatriz(x, SL->n, 1); // inicializa chute inicial com 0 
     calcResiduoInicial(SL->A,SL->b,x,resid,SL->n); 
     
     // inicia direcao inicial com o residuo inicial
@@ -273,6 +268,8 @@ int gradienteConjugado(SistLinear_t *SL, double **x, double *M, int maxIt, doubl
       // calcula prox direcao de busca
       copiaMat(p,pAnt,SL->n, 1); // pAnt = p 
       calcProxDirecBusca(p,resid,beta,pAnt,SL->n); 
+
+      prnMat(x, SL->n,1); 
     }
 
     return it;  
