@@ -46,7 +46,8 @@ int main(int argc, char **argv)
     // prnMat(proxX, n,1); OK 
     // calcProxDirecBusca(p2,resid, 0.0088,p, n); OK
     // prnMat(p2, n, 1); OK
-    calcResiduo(residAnt, -73/331, A, p, resid,n);
+    calcResiduo(residAnt, -(73/331), A, p, resid,n);
+    printf("matriz residuo resultante: \n");
     prnMat(resid, n, 1); 
 
     //////
