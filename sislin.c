@@ -117,7 +117,7 @@ double calcAlpha(double **resid,double **A, double **p, int n){
   transporMat(resid, residTransp, n, 1);
   transporMat(p, pTransp, n, 1);
   
-  double **resMultResult = multMat(resid,residTransp,n,1,n,1); // resid * resid^T 
+  double **resMultResult = multMat(resid,residTransp,n,1,1,n); // resid * resid^T 
   double **multResulPtxA = multMat(pTransp,A,1,n,n,n); // p^T * A
   double  **multResulPxAxP =  multMat(multResulPtxA,p,1,n,n,1); // (p^T * A) * p
 
@@ -147,9 +147,8 @@ double calcBeta(double **resid,double **residAnt, int n){
   
   transporMat(resid, residTransp, n,1);
   transporMat(residAnt, residAntTransp, n,1);
-  double **resMultResult = multMat(resid,residTransp,n,1,n,1); // res * res^t
-  double **resAntMultResult = mulMat(residAnt,residAntTransp,n,1); // res<k-1> * res<k-1>^T
-  
+  double **resMultResult = multMat(resid,residTransp,n,1,1,n); // res * res^t
+  double **resAntMultResult = multMat(residAnt,residAntTransp,n,1,1,n); // res<k-1> * res<k-1>^T
 
   beta += resMultResult[0][0]/ resAntMultResult[0][0];
 
@@ -194,13 +193,12 @@ void calcResiduo(){
  * @param n  - DIMENSAO 
  * @return int - NUMERO DE ITERACOES
  */
-int gradienteConjugado(double *A, double *b, double *x, double *M, int maxIt, double tol, int n){
+int gradienteConjugado(SistLinear_t SL, double **x, double *M, int maxIt, double tol){
     // inicia chute inicial com vetor de 0  
-    double **x = alocarMatriz(n,2); // matriz de solucao
-    double **resid = alocarMatriz(n,2); // matriz de residuo 
-    double **p = alocarMatriz(n,2); // matriz de direcao
+    double **resid = alocarMatriz(SL.n+1,2); // matriz de residuo 
+    double **p = alocarMatriz(SL.n+1,2); // matriz de direcao
 
-    inicializarMatriz(x, n, 2); 
+    inicializarMatriz(x, SL.n+1, 2); 
     
     // inicia direcao inicial com o residuo inicial
     
