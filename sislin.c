@@ -120,7 +120,6 @@ double calcAlpha(double **resid,double **A, double **p, int n){
   double **multResulPtxA = multMat(pTransp,A,1,n,n,n); // p^T * A
   double  **multResulPxAxP =  multMat(multResulPtxA,p,1,n,n,1); // (p^T * A) * p
 
-  prnMat(multResulPtxA,1,n);
   alpha = resMultResult[0][0] /  multResulPxAxP[0][0]; 
 
   liberarMatriz(residTransp);
@@ -167,12 +166,15 @@ double calcBeta(double **resid,double **residAnt, int n){
  * @param xAnt - Valor do x<i-1> anterior
  * @param alpha - valor do alpha<i-1> anterior
  * @param p - valor da direção de busca p<i-1)> anterior
+ * @param n - dimensao do sistema linear
  * @return double - Proximo x calculado
  */
 void calcProxX(double **proxX,double **xAnt,double alpha, double **p, int n){
     for (int i =0;i < n;++i)
-      for (int j=0;j < 1;++j)
+      for (int j=0;j < 1;++j){
+        printf("xant %f alpha %f * p[i][j] %f \n",xAnt[i][j],alpha,p[i][j]);
         proxX[i][j] = xAnt[i][j] + alpha * p[i][j]; 
+      }
 }
 
 
@@ -238,8 +240,8 @@ void prnVetor (real_t *v, unsigned int n)
 }
 
 void prnMat (double **mat, unsigned int n, unsigned int m){
-  for (unsigned int i; i < n;++i){
-    for (unsigned int j; j < m;++j)
+  for (unsigned int i=0; i < n;++i){
+    for (unsigned int j=0; j < m;++j)
       printf(" %f",mat[i][j]);
     printf("\n");
   }
