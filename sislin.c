@@ -171,10 +171,8 @@ double calcBeta(double **resid,double **residAnt, int n){
  */
 void calcProxX(double **proxX,double **xAnt,double alpha, double **p, int n){
     for (int i =0;i < n;++i)
-      for (int j=0;j < 1;++j){
-        printf("xant %f alpha %f * p[i][j] %f \n",xAnt[i][j],alpha,p[i][j]);
+      for (int j=0;j < 1;++j)
         proxX[i][j] = xAnt[i][j] + alpha * p[i][j]; 
-      }
 }
 
 
