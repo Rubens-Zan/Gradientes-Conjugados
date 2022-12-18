@@ -22,7 +22,7 @@ int main(int argc, char **argv)
     double **xAnt = alocarMatriz(n+1, 2);
     double **p = alocarMatriz(n+1, 2);
     double **p2 = alocarMatriz(n+1, 2);
-
+    double alpha = (73/331)*(-1); 
     
     xAnt[0][0] = 0.2356;
     xAnt[1][0] = 0.3384;
@@ -46,7 +46,7 @@ int main(int argc, char **argv)
     // prnMat(proxX, n,1); OK 
     // calcProxDirecBusca(p2,resid, 0.0088,p, n); OK
     // prnMat(p2, n, 1); OK
-    calcResiduo(residAnt, -(73/331), A, p, resid,n);
+    calcResiduo(residAnt, alpha, A, p, resid,n);
     printf("matriz residuo resultante: \n");
     prnMat(resid, n, 1); 
 
