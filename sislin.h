@@ -22,7 +22,8 @@ typedef struct {
 SistLinear_t* alocaSisLin (unsigned int n);
 void liberaSisLin (SistLinear_t *SL);
 void iniSisLin (SistLinear_t *SL, unsigned int nDiagonais);
-
+double calcBeta(double **resid,double **residAnt, int n); 
+double calcAlpha(double **resid,double **A, double **p, int n);
 // Leitura e impressão de sistemas lineares
 SistLinear_t *lerSisLin ();
 void prnSisLin (SistLinear_t *SL);
