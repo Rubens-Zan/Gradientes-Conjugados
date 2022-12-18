@@ -120,13 +120,8 @@ double calcAlpha(double **resid,double **A, double **p, int n){
   double **multResulPtxA = multMat(pTransp,A,1,n,n,n); // p^T * A
   double  **multResulPxAxP =  multMat(multResulPtxA,p,1,n,n,1); // (p^T * A) * p
 
-  printf("resid * resid^T : %f\n",resMultResult[0][0]);
-  printf("multResulPtxA : ");
   prnMat(multResulPtxA,1,n);
-  printf("(p^T * A) * p:  %f\n",multResulPxAxP[0][0]);
-
   alpha = resMultResult[0][0] /  multResulPxAxP[0][0]; 
-
 
   liberarMatriz(residTransp);
   liberarMatriz(pTransp);
