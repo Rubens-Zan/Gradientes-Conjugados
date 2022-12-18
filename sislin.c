@@ -255,21 +255,28 @@ int gradienteConjugado(SistLinear_t *SL, double **x, double *M, int maxIt, doubl
     for(it =0;it < 3;++it){
       // calcula alpha
       alpha = calcAlpha(resid,SL->A,p,SL->n);
+      printf("ALPHA %f\n", alpha);
       copiaMat(x,xAnt,SL->n,1); // xAnterior = xAtual
       // calcula x
       calcProxX(x,xAnt,alpha,p,SL->n); 
+      printf("X: \n");
+      prnMat(x,SL->n,1);
 
       // calcula residuo
       copiaMat(resid,residAnt,SL->n, 1); 
       calcResiduo(residAnt,alpha,SL->A,p,resid,SL->n); 
+      printf("residuo: \n");
+      prnMat(resid,SL->n,1);
+      
       // calcula beta
       beta = calcBeta(resid,residAnt,SL->n);
+      printf("beta %f\n", beta);
 
       // calcula prox direcao de busca
-      copiaMat(p,pAnt,SL->n, 1); // pAnt = p 
+      copiaMat(p,pAnt,SL->n, 1); // pAnt = p
       calcProxDirecBusca(p,resid,beta,pAnt,SL->n); 
-
-      prnMat(x, SL->n,1); 
+      printf("p: \n");
+      prnMat(p,SL->n,1);
     }
 
     return it;  

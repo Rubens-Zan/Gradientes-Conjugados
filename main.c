@@ -11,7 +11,7 @@ int main(int argc, char **argv)
     tComando *comando = (tComando *)malloc(sizeof(tComando));
     tratamentoEntrada(argc, argv, comando);
     // SistLinear_t *SL = alocaSisLin(comando->dimensao+1);
-    SistLinear_t *SL = alocaSisLin(2+1);
+    SistLinear_t *SL = alocaSisLin(2);
     
     double **x = alocarMatriz(SL->n+1,2); 
     double **matPreConj = alocarMatriz(SL->n+1,SL->n+1); 
