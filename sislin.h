@@ -27,10 +27,7 @@ void iniSisLin (SistLinear_t *SL, unsigned int nDiagonais);
 SistLinear_t *lerSisLin ();
 void prnSisLin (SistLinear_t *SL);
 void prnVetor (real_t *vet, unsigned int n);
-
-void calcProxX(double **proxX,double **xAnt,double a, double **p, int n);
-void calcProxDirecBusca(double **proxDir,double **resid, double beta,double **direcAnterior, int n);
-
+int gradienteConjugado(double *A, double *b, double *x, double *M, int maxIt, double tol, int n);
 
 
 #endif // __SISLIN_H__

@@ -10,7 +10,9 @@ int main(int argc, char **argv){
     SistLinear_t * SL = alocaSisLin(comando->dimensao);
     iniSisLin(SL, comando->nDiagonais);
     
+    prnSisLin(SL); 
 
+    // gradienteConjugado();
     free(comando); 
     liberaSisLin(SL); 
     return 0;

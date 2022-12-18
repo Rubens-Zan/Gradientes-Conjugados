@@ -2,7 +2,9 @@
 #include <math.h>
 #include <stdlib.h>
 
+#include "opmatrizes.h"
 #include "sislin.h"
+#include "utils.h"
 
 // Alocaçao de matriz em memória. 
 SistLinear_t* alocaSisLin (unsigned int n)
@@ -35,6 +37,7 @@ SistLinear_t* alocaSisLin (unsigned int n)
   return (SL);
 }
 
+
 // Liberacao de memória
 void liberaSisLin (SistLinear_t *SL)
 {
@@ -48,27 +51,6 @@ void liberaSisLin (SistLinear_t *SL)
 
     free(SL);
   }
-}
-
-// /***********************
-//  * Função que gera os coeficientes de um sistema linear k-diagonal
-//  * i,j: coordenadas do elemento a ser calculado (0<=i,j<n)
-//  * k: numero de diagonais da matriz A
-//  ***********************/
-double generateRandomA( unsigned int i, unsigned int j, unsigned int k )
-{
-  static double invRandMax = 1.0 / (double)RAND_MAX;
-  return ( (i==j)?(double)(k<<1) : 1.0 )  * (double)rand() * invRandMax;
-}
-
-// /***********************
-//  * Função que gera os termos independentes de um sistema linear k-diagonal
-//  * k: numero de diagonais da matriz A
-//  ***********************/
-double generateRandomB( unsigned int k )
-{
-  static double invRandMax = 1.0 / (double)RAND_MAX;
-  return (double)(k<<2) * (double)rand() * invRandMax;
 }
 
 
@@ -99,11 +81,13 @@ void iniSisLin (SistLinear_t *SL, unsigned int nDiagonais){
   
 }
 
+
 /***********************************************************************/
+// FUNCOES PARA A RESOLUCAO POR GRADIENTE CONJUGADO
 
 /**
- * @brief Calcula a proxima direcao de busca p<i>
- * p<i> = r<i> + beta<i-1> * p<i-1> 
+ * @brief Calcula a proxima direcao de busca p<k>
+ * p[i][j]<k> = r[i][j]<k> + beta<k-1> * p[i][j]<k-1> 
  * @param proxDir
  * @param resid - Residuo calculado r<i>
  * @param beta - Beta calculado beta<i-1>
@@ -112,37 +96,91 @@ void iniSisLin (SistLinear_t *SL, unsigned int nDiagonais){
  */
 void calcProxDirecBusca(double **proxDir,double **resid, double beta,double **direcAnterior, int n){
     for (int i=0; i < n;++i)
-      for(int j=0;j < n;++j)
+      for(int j=0;j < 1;++j)
         proxDir[i][j] = resid[i][j] + beta * direcAnterior[i][j]; 
 }
 
+/**
+ * @brief 
+ * alpha = r<k>^t*r<k>/(p<k>^t*A*p<k>)
+ * @param resid - residuo calculado
+ * @param A - Matriz original
+ * @param p - Matriz de direção de busca calculada
+ * @param n - dimensão da matriz
+ * @return double 
+ */
+double calcAlpha(double **resid,double **A, double **p, int n){
+  double alpha = 0; 
+  double **residTransp=alocarMatriz(1,n+1); // matriz de residuo transposta
+  double **pTransp = alocarMatriz(1,n+1); // matriz de direcao transposta
+  
+  transporMat(resid, residTransp, n, 1);
+  transporMat(p, pTransp, n, 1);
+  
+  double **resMultResult = multMat(resid,residTransp,n,1,n,1); // resid * resid^T 
+  double **multResulPtxA = multMat(pTransp,A,1,n,n,n); // p^T * A
+  double  **multResulPxAxP =  multMat(multResulPtxA,p,1,n,n,1); // (p^T * A) * p
+
+  alpha = resMultResult[0][0] /  multResulPxAxP[0][0]; 
+
+
+  liberarMatriz(residTransp);
+  liberarMatriz(pTransp);
+  liberarMatriz(resMultResult);
+  liberarMatriz(multResulPtxA);
+  liberarMatriz(multResulPxAxP);
+  
+  return alpha; 
+}
 
 /**
  * @brief Calcula beta com base no residuo atual e no anterior
- * 
- * @param resid 
- * @param residAnt 
- * @return double 
+ * beta<k> = (residuo<k+1>^T*residuo<k+1>)/(residuoAnterior<k>^T*residuoAnterior<k>)
+ * @param resid - Residuo da k-esima iteração
+ * @param residAnt - Resíduo da k-1-esima iteração
+ * @return double - valor de beta calculado
  */
-double calcBeta(double *resid,double *residAnt, int n){
-    
+double calcBeta(double **resid,double **residAnt, int n){
+	double beta = 0; 
+  double **residTransp=alocarMatriz(1,n+1); // matriz de residuo transposta
+	double **residAntTransp=alocarMatriz(1,n+1); // matriz do residuo anterior transposta
+  
+  transporMat(resid, residTransp, n,1);
+  transporMat(residAnt, residAntTransp, n,1);
+  double **resMultResult = multMat(resid,residTransp,n,1,n,1); // res * res^t
+  double **resAntMultResult = mulMat(residAnt,residAntTransp,n,1); // res<k-1> * res<k-1>^T
+  
+
+  beta += resMultResult[0][0]/ resAntMultResult[0][0];
+
+  liberarMatriz(resMultResult);
+  liberarMatriz(resAntMultResult);
+  liberarMatriz(residAntTransp);
+  liberarMatriz(residTransp);
+
+  return beta; 
 }
 
+
 /**
- * @brief Calcula o proximo x<i>
- * x<i> = x<i-1> + a <i> * p<i-1> 
+ * @brief Calcula o proximo x<k>
+ * x[i][j]<k> = x[i][j]<k-1> + a <k> * p[i][j]<k-1> 
  * @param proxX  
  * @param xAnt - Valor do x<i-1> anterior
- * @param a - valor do a<i-1> anterior
+ * @param alpha - valor do alpha<i-1> anterior
  * @param p - valor da direção de busca p<i-1)> anterior
  * @return double - Proximo x calculado
  */
-void calcProxX(double **proxX,double **xAnt,double a, double **p, int n){
+void calcProxX(double **proxX,double **xAnt,double alpha, double **p, int n){
     for (int i =0;i < n;++i)
-      for (int j=0;j<n;++j)
-        proxX[i][j] = xAnt[i][j] + a * p[i][j]; 
+      for (int j=0;j < 1;++j)
+        proxX[i][j] = xAnt[i][j] + alpha * p[i][j]; 
 }
 
+
+void calcResiduo(){
+  // TODO
+}
 
 /**
  * @brief Metodo resolvedor de sistemas lineares pelo metodo de gradiente conjugado
@@ -157,7 +195,23 @@ void calcProxX(double **proxX,double **xAnt,double a, double **p, int n){
  * @return int - NUMERO DE ITERACOES
  */
 int gradienteConjugado(double *A, double *b, double *x, double *M, int maxIt, double tol, int n){
+    // inicia chute inicial com vetor de 0  
+    double **x = alocarMatriz(n,2); // matriz de solucao
+    double **resid = alocarMatriz(n,2); // matriz de residuo 
+    double **p = alocarMatriz(n,2); // matriz de direcao
 
+    inicializarMatriz(x, n, 2); 
+    
+    // inicia direcao inicial com o residuo inicial
+    
+    // verifica erro do x com a tolerancia 
+    // loop 
+    // calcula a
+    // calcula x
+    // calcula residuo
+    // calcula beta 
+    // calcula prox direcao
+     
 }
 
 /***********************************************************************/
@@ -185,5 +239,3 @@ void prnVetor (real_t *v, unsigned int n)
   printf ("\n\n");
 
 }
-
-
