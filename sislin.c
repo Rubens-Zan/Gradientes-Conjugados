@@ -187,7 +187,7 @@ void calcProxX(double **proxX,double **xAnt,double alpha, double **p, int n){
  */
 void calcResiduo(double **residuoAnterior, double alpha, double **A, double **p, double ** residuo,int n){
   // TODO
-  double matAlphaxA[n+1][n+1];
+  double **matAlphaxA = alocarMatriz(n+1,n+1);
 
   for (int i=0;i < n;++i){
     for (int j=0;j<n;++j){
@@ -201,7 +201,9 @@ void calcResiduo(double **residuoAnterior, double alpha, double **A, double **p,
       residuo[i][j] = residuoAnterior[i][j]-multAlphaxAxp[i][j];  
     }
 
+  liberarMatriz(matAlphaxA); 
   liberarMatriz(multAlphaxAxp); 
+
 }
 
 /**
