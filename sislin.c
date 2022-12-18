@@ -189,14 +189,9 @@ void calcResiduo(double **residuoAnterior, double alpha, double **A, double **p,
   double **matAlphaxA = alocarMatriz(n+1,n+1);
 
   for (int i=0;i < n;++i){
-    printf("alpha:  %f\n", alpha);
-      
     for (int j=0;j<n;++j){
       matAlphaxA[i][j] = alpha * A[i][j]; // alpha * A
-
-      printf("matAlphaxA[i][j]:  %f\n", matAlphaxA[i][j]);
     }
-    printf("\n"); 
   }
   printf("\n multAlphaxAxp: \n"); 
   double **multAlphaxAxp =multMat(matAlphaxA, p,n,n,n,1); // (alpha * A) * p  
@@ -213,36 +208,115 @@ void calcResiduo(double **residuoAnterior, double alpha, double **A, double **p,
 
 }
 
+
+/**
+ * @brief Calcula o residuo inicial 
+ * r0 = b - A * x0
+ * @param A 
+ * @param b 
+ * @param x 
+ * @param resid 
+ */
+void calcResiduoInicial(double **A,double *b,double **x,double **resid, int n){
+  double **matAux = multMat(A, x, n,n,n,1);
+  
+  for (int i=0;i < n;++i){
+    for (int j=0;j < 1; ++j){
+      resid[i][j] =b[i] - matAux[i][j];
+    }
+  }
+}
+
 /**
  * @brief Metodo resolvedor de sistemas lineares pelo metodo de gradiente conjugado
  * 
  * @param A  - MATRIZ A SER TESTADA
  * @param b - Coeficiente de solucao
- * @param x -  Solucao do sistema
+ * @param x -  Solucao do sistema inicial
  * @param M  - Matriz precondicionadora 
  * @param maxIt - NUMERO MAXIMO DE ITERACOES
  * @param tol - TOLERANCIA
  * @param n  - DIMENSAO 
  * @return int - NUMERO DE ITERACOES
  */
-int gradienteConjugado(SistLinear_t SL, double **x, double *M, int maxIt, double tol){
+int gradienteConjugado(SistLinear_t *SL, double **x, double *M, int maxIt, double tol){
     // inicia chute inicial com vetor de 0  
-    double **resid = alocarMatriz(SL.n+1,2); // matriz de residuo 
-    double **p = alocarMatriz(SL.n+1,2); // matriz de direcao
-
-    inicializarMatriz(x, SL.n+1, 2); 
+    double alpha, beta; 
+    double **resid = alocarMatriz(SL->n+1,2); // matriz de residuo 
+    double **residAnt = alocarMatriz(SL->n+1,2); // matriz de direcao
+    double **p = alocarMatriz(SL->n+1,2); // matriz de direcao
+    double **pAnt = alocarMatriz(SL->n+1,2); // matriz de direcao    
+    double **xAnt = alocarMatriz(SL->n+1,2); // matriz de direcao
+    int it;
+    
+    inicializarMatriz(x, SL->n, 1); // inicializa chute inicial com 0 
+    calcResiduoInicial(SL->A,SL->b,x,resid,SL->n); 
     
     // inicia direcao inicial com o residuo inicial
-    
+    copiaMat(resid,p,SL->n, 1); 
+
     // verifica erro do x com a tolerancia 
     // loop 
-    // calcula a
-    // calcula x
-    // calcula residuo
-    // calcula beta 
-    // calcula prox direcao
-     
+    for(it =0;it < 3;++it){
+      // calcula alpha
+      alpha = calcAlpha(resid,SL->A,p,SL->n);
+      copiaMat(x,xAnt,SL->n,1); // xAnterior = xAtual
+      // calcula x
+      calcProxX(x,xAnt,alpha,p,SL->n); 
+
+      // calcula residuo
+      copiaMat(resid,residAnt,SL->n, 1); 
+      calcResiduo(residAnt,alpha,SL->A,p,resid,SL->n); 
+      // calcula beta
+      beta = calcBeta(resid,residAnt,SL->n);
+
+      // calcula prox direcao de busca
+      copiaMat(p,pAnt,SL->n, 1); // pAnt = p 
+      calcProxDirecBusca(p,resid,beta,pAnt,SL->n); 
+    }
+
+    return it;  
 }
+
+
+/*!
+  \brief Essa função calcula a norma L2 do resíduo de um sistema linear
+
+  \param SL Ponteiro para o sistema linear
+  \param x Solução do sistema linear
+  \param residue Valor do resíduo
+
+  \return Norma L2 do resíduo
+*/
+// real_t normaL2Residuo(SistLinear_t *SL, real_t *x)
+// {
+//   real_t norma = 0;
+//   real_t res[SL->n + 1];
+//   // A*X
+//   real_t matrix_solution[SL->n + 1];
+
+//   // função que calcula a Multiplicação A*X da matriz
+//  real_t ** matrix_solution = multMat(SL, x);
+
+//   // r0 = b0 - x0, r1 = b1 - x1, r2 = b2 - x2.... rn = bn - xn
+//   for (int i = 0; i < SL->n; i++)
+//     res[i] = SL->b[i] - matrix_solution[i];
+
+//   // norma = sqrt(r1²+r2²+r3²+...)
+//   for (int i = 0; i < SL->n; i++)
+//     norma += res[i] * res[i];
+//   norma = sqrt(norma);
+//   // Retorna número de iterações
+//   if (isnan(norma) || isinf(norma))
+//   {
+//     fprintf(stderr, "Resultado invalido! \n");
+
+//     return -1;
+//   }
+//   return norma;
+// }
+
+
 
 /***********************************************************************/
 
@@ -278,3 +352,8 @@ void prnMat (double **mat, unsigned int n, unsigned int m){
   }
 }
 
+void copiaMat(double **matA, double **matB,int lin,int col){
+  for (int i=0;i < lin;++i)
+    for (int j=0;j < col;++j)
+      matB[i][j] = matA[i][j]; 
+}

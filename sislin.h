@@ -36,7 +36,7 @@ void prnMat (double **mat, unsigned int n, unsigned int m);
 SistLinear_t *lerSisLin ();
 void prnSisLin (SistLinear_t *SL);
 void prnVetor (real_t *vet, unsigned int n);
-int gradienteConjugado(SistLinear_t SL, double **x, double *M, int maxIt, double tol); 
-
+int gradienteConjugado(SistLinear_t *SL, double **x, double *M, int maxIt, double tol);
+void copiaMat(double **matA, double **matB,int lin,int col); 
 #endif // __SISLIN_H__
 
