@@ -186,15 +186,22 @@ void calcProxX(double **proxX,double **xAnt,double alpha, double **p, int n){
  * @param n - dimensao do sistema linear
  */
 void calcResiduo(double **residuoAnterior, double alpha, double **A, double **p, double ** residuo,int n){
-  // TODO
   double **matAlphaxA = alocarMatriz(n+1,n+1);
 
   for (int i=0;i < n;++i){
+    printf("alpha:  %f\n", alpha);
+      
     for (int j=0;j<n;++j){
       matAlphaxA[i][j] = alpha * A[i][j]; // alpha * A
+
+      printf("matAlphaxA[i][j]:  %f\n", matAlphaxA[i][j]);
     }
+    printf("\n"); 
   }
+  printf("\n multAlphaxAxp: \n"); 
   double **multAlphaxAxp =multMat(matAlphaxA, p,n,n,n,1); // (alpha * A) * p  
+  prnMat(multAlphaxAxp,n,1); 
+  printf("\n");
 
   for (int i=0;i < n;++i)
     for(int j=0;j < 1;++j){
