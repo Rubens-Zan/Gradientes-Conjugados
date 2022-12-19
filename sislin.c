@@ -233,9 +233,10 @@ void calcResiduoInicial(double **A,double *b,double **x,double **resid, int n){
  * @param maxIt - NUMERO MAXIMO DE ITERACOES
  * @param tol - TOLERANCIA
  * @param n  - DIMENSAO 
+ * @param matSaida - Matriz que guardara o Erro e a Norma de cada iteração
  * @return int - NUMERO DE ITERACOES
  */
-int gradienteConjugado(SistLinear_t *SL, double **x, double *M, int maxIt, double tol){
+int gradienteConjugado(SistLinear_t *SL, double **x, double *M, int maxIt, double tol, double matSaida[][2]){
     // inicia chute inicial com vetor de 0  
     double alpha, beta; 
     double **resid = alocarMatriz(SL->n+1,2); // matriz de residuo 
@@ -243,6 +244,8 @@ int gradienteConjugado(SistLinear_t *SL, double **x, double *M, int maxIt, doubl
     double **p = alocarMatriz(SL->n+1,2); // matriz de direcao
     double **pAnt = alocarMatriz(SL->n+1,2); // matriz de direcao    
     double **xAnt = alocarMatriz(SL->n+1,2); // matriz de direcao
+    double **z = alocarMatriz(SL->n+1,2); // matriz de direcao
+  
     int it;
     
     calcResiduoInicial(SL->A,SL->b,x,resid,SL->n); 

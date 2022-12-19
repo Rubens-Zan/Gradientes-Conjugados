@@ -12,7 +12,11 @@ int main(int argc, char **argv)
     tratamentoEntrada(argc, argv, comando);
     // SistLinear_t *SL = alocaSisLin(comando->dimensao+1);
     SistLinear_t *SL = alocaSisLin(2);
-    
+    FILE *arqSaida;
+	double matSaida[comando->nIter+1][2];
+
+	arqSaida = fopen(comando->saida,"w+");
+	fprintf(arqSaida,"###########\n");
     double **x = alocarMatriz(SL->n+1,2); 
     double **matPreConj = alocarMatriz(SL->n+1,SL->n+1); 
     geraMatrizIdentidade(matPreConj,SL->n); 
@@ -31,7 +35,10 @@ int main(int argc, char **argv)
     // inicializarMatriz(x, SL->n, 1); // inicializa chute inicial com 0 
     prnSisLin(SL); 
     printf("\n"); 
-    gradienteConjugado(SL,x,matPreConj,comando->nIter,comando->erroMax);
+    gradienteConjugado(SL,x,matPreConj,comando->nIter,comando->erroMax, matSaida);
+
+
+	fclose(arqSaida);
 
     free(comando);
     liberaSisLin(SL);
