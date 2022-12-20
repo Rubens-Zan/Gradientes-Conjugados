@@ -18,8 +18,8 @@ int main(int argc, char **argv)
 	arqSaida = fopen(comando->saida,"w+");
 	fprintf(arqSaida,"###########\n");
     double **x = alocarMatriz(SL->n+1,2); 
-    double **matPreConj = alocarMatriz(SL->n+1,SL->n+1); 
-    geraMatrizIdentidade(matPreConj,SL->n); 
+    double **matIdentidade = alocarMatriz(SL->n+1,SL->n+1); 
+    geraMatrizIdentidade(matIdentidade,SL->n); 
 
     // iniSisLin(SL, comando->nDiagonais);
     SL->A[0][0] = 4;
@@ -35,14 +35,13 @@ int main(int argc, char **argv)
     // inicializarMatriz(x, SL->n, 1); // inicializa chute inicial com 0 
     prnSisLin(SL); 
     printf("\n"); 
-    gradienteConjugado(SL,x,matPreConj,comando->nIter,comando->erroMax, matSaida);
-
+    gradienteConjugadoPreCond(SL, x, matIdentidade, comando->nIter,comando->erroMax,matSaida);
 
 	fclose(arqSaida);
 
     free(comando);
     liberaSisLin(SL);
     liberarMatriz(x); 
-    liberarMatriz(matPreConj); 
+    liberarMatriz(matIdentidade); 
     return 0;
 }
