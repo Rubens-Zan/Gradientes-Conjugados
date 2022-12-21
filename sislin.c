@@ -286,7 +286,9 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, double **x, double **matPreCon
     
     // z<0> = MATPRECONJ^-1 * r<0>
     multMat(matPreConj,resid,SL->n,SL->n,SL->n,1,z); 
-
+    printf("z 0 : \n");
+    prnMat(z,SL->n,1);
+    
     // inicia direcao inicial com o z inicial
     copiaMat(direc,z,SL->n, 1); // d<0> = z<0>
 
@@ -295,10 +297,13 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, double **x, double **matPreCon
     for(it =0;it < maxIt;++it){
       // calcula alpha
       alpha = calcAlpha(resid,SL->A,direc,z,SL->n);
-      
+      printf("ALPHA %d: \n", alpha);
+
       copiaMat(x,xAnt,SL->n,1); // xAnterior = xAtual
       // calcula x
       calcProxX(x,xAnt,alpha,direc,SL->n); 
+      printf("x: \n");
+      prnMat(x,SL->n,1);
 
       // calcula residuo
       copiaMat(resid,residAnt,SL->n, 1); 
@@ -309,7 +314,9 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, double **x, double **matPreCon
       // calcula z
       // z<k+1> = C^-1 * r<k+1>
       multMat(matPreConj,resid,SL->n,SL->n,SL->n,1,z); 
-
+      printf("z: \n");
+      prnMat(z,SL->n,1);
+      
       // calcula erro 
       // ERRO = r<k+1> * r<k+1>
 
@@ -317,12 +324,13 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, double **x, double **matPreCon
       
       // calcula beta
       beta = calcBeta(resid,residAnt,z,SL->n);
+      printf("BETA %d: \n", beta);
 
       // calcula prox direcao de busca
       copiaMat(direc,dAnt,SL->n, 1); // pAnt = p
       calcProxDirecBusca(direc,resid,beta,dAnt,SL->n); 
-      // printf("p: \n");
-      // prnMat(p,SL->n,1);
+      printf("p: \n");
+      prnMat(direc,SL->n,1);
     }
 
     return it;  
