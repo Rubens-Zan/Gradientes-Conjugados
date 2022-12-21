@@ -6,6 +6,7 @@ typedef struct tComando {
     char saida[100];
 } tComando;
 
+double timestamp(void);
 void tratamentoEntrada(int argc, char **argv, tComando *comando);
 double ** alocarMatriz(int lin,int col); 
 void liberarMatriz(double **matriz);
