@@ -23,8 +23,7 @@ int main(int argc, char **argv)
 
     iniSisLin(SL, comando->nDiagonais);
     precondicionador_identidade(SL,matIdentidade);
-    aplicaPreCondicMat(SL->A, matIdentidade); 
-    geraMatrizIdentidade(matIdentidade,SL->n); 
+    aplicaPreCondicSL(SL, matIdentidade); 
 
     // SL->A[0][0] = 4;
     // SL->A[0][1] = 1;

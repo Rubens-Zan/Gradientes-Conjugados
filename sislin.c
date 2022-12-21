@@ -278,6 +278,9 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, double *x, double *matPreConj,
       // z<k+1> = C^-1 * r<k+1>
       calcZ(z, matPreConj,resid, SL->n); 
       
+      prnVetor (x, SL->n);
+      prnVetor (resid, SL->n);
+
       // // calcula erro 
       // // ERRO = r<k+1> * r<k+1>
 
@@ -345,7 +348,7 @@ void precondicionador_identidade(SistLinear_t *SL, real_t *M){
 }
 
 
-void aplicaPreCondicMat(SistLinear_t *SL, real_t *M){
+void aplicaPreCondicSL(SistLinear_t *SL, real_t *M){
   for (int i = 0; i < SL->n; i++){
     for (int j = 0; j < SL->n; j++){
       if (i == j)
