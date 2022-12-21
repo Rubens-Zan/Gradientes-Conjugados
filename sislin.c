@@ -103,6 +103,7 @@ void iniSisLin (SistLinear_t *SL, unsigned int nDiagonais){
   // FAZER SER DIAGONAL DOMINANTE
   //  FAZER O TERMO I,I SER A SOMA DE TUDO
     for (unsigned int i=0; i<n; ++i) {
+    SL->A[i][i]=0.1;
     for (unsigned int j=0; j<n; ++j)  {
       SL->A[i][i] += SL->A[i][j]; 
     }
@@ -144,14 +145,30 @@ void calcProxDirecBusca(double *proxDir,double *z, double beta,double *direcAnte
  * @return double 
  */
 double calcAlpha(double *resid,double **A, double *p,double *z, int n){
-  double alpha = 0; 
+  double alpha = 7; 
   double *vetorAux = (double *) malloc (sizeof(double)* n);
 
-  double resTxZ = multiplicaVetor_Vetor(resid,z,n); // resTxZ = resid^T * z
+  double resTxZ = 0;
+  // multiplicaVetor_Vetor(resid,z,n); 
+  for (int i =0;i< n;++i){    // resTxZ = resid^T * z
+    resTxZ+= resid[i] * z[i]; 
+  }
 
-  multiplicaMatriz_Vetor(A,p,vetorAux,n ); // multPtxA = p * A
-  double denom =multiplicaVetor_Vetor(vetorAux,p,n); 
-
+  for (int i =0;i< n;++i){    //multPtxA = p * A
+    vetorAux[i] = 0;
+    for (int j =0;j< n;++j){    
+      vetorAux[i] = p[j] * A[j][i];  
+    }
+  }
+  
+  // multiplicaMatriz_Vetor(A,p,vetorAux,n ); // multPtxA = p * A
+  
+  double denom =0;
+  //  multiplicaVetor_Vetor(vetorAux,p,n); 
+  for (int i =0; i < n;++i){    
+    denom  += vetorAux[i] * p[i];  
+  }
+  
   alpha = resTxZ /  denom; 
   // Verificação se resultou em NaN ou +/- infinito
   if (isnan(alpha) || isinf(alpha))
@@ -258,6 +275,7 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, double *matPreConj, int maxIt,
     // x = 0 
     // inicializarMatriz(x,SL->n,1);  
     // memset(x,0,sizeof(x)*SL->n);
+
     for (int i=0; i < SL->n;i++){
       x[i] = 0;
     }
@@ -276,8 +294,10 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, double *matPreConj, int maxIt,
     // loop 
     for(it =0;it < maxIt;++it){
       // calcula alpha
+      printf("antes ALPHA : %f \n", alpha);
+
       alpha = calcAlpha(resid,SL->A,direc,z,SL->n);
-      printf("ALPHA : %f \n", alpha);
+      printf("ALPHA depois... : %f \n", alpha);
 
       copiaVetor(x, xAnt,SL->n); 
       
@@ -291,11 +311,13 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, double *matPreConj, int maxIt,
       // // calcula z
       // z<k+1> = C^-1 * r<k+1>
       calcZ(z, matPreConj,resid, SL->n); 
-      
-      printf("x :\n");
-      prnVetor (x, SL->n);
-      printf("RESID :\n");
-      prnVetor (resid, SL->n);
+      // printf("z :\n");
+      // prnVetor (z, SL->n);
+
+      // printf("x :\n");
+      // prnVetor (x, SL->n);
+      // printf("RESID :\n");
+      // prnVetor (resid, SL->n);
 
       // // calcula erro 
       // // ERRO = r<k+1> * r<k+1>
@@ -304,15 +326,15 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, double *matPreConj, int maxIt,
       
       // // calcula beta
       beta = calcBeta(resid,residAnt,z,SL->n);
-      printf("BETA : %f \n", beta);
+      // printf("BETA : %f \n", beta);
 
       // // calcula prox direcao de busca
       copiaVetor(direc, dAnt,SL->n); 
       
       calcProxDirecBusca(direc,z,beta,dAnt,SL->n); 
-      printf("DIREC :\n");
+      // printf("DIREC :\n");
 
-      prnVetor (direc, SL->n);
+      // prnVetor (direc, SL->n);
 
     }
 
