@@ -32,10 +32,9 @@ int main(int argc, char **argv)
     x[0][0] = 2;
     x[1][0] = 1;
 
-    // inicializarMatriz(x, SL->n, 1); // inicializa chute inicial com 0 
     prnSisLin(SL); 
     printf("\n"); 
-    gradienteConjugadoPreCond(SL, x, matIdentidade, comando->nIter,comando->erroMax,matSaida);
+    gradienteConjugadoPreCondic(SL, x, matIdentidade, comando->nIter,comando->erroMax,matSaida);
 
 	fclose(arqSaida);
 
