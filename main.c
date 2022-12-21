@@ -43,7 +43,7 @@ int main(int argc, char **argv)
 
     free(comando);
     free(matIdentidade);
-    free(x);
+    // free(x);
 
     liberaSisLin(SL);
     return 0;
