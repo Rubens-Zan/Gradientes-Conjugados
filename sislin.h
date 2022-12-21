@@ -25,11 +25,6 @@ void iniSisLin (SistLinear_t *SL, unsigned int nDiagonais);
 
 //
 
-double calcBeta(double **resid,double **residAnt,double **z, int n);
-double calcAlpha(double **resid,double **A, double **p,double **z, int n);
-void calcX(double **proxX,double **xAnt,double alpha, double **p, int n);
-void calcResiduo(double **residuoAnterior, double alpha, double **A, double **p, double ** residuo,int n);
-void calcProxDirecBusca(double **proxDir,double **z, double beta,double **direcAnterior, int n);
 
 //
 void prnMat (double **mat, unsigned int n, unsigned int m);
@@ -37,7 +32,7 @@ void prnMat (double **mat, unsigned int n, unsigned int m);
 SistLinear_t *lerSisLin ();
 void prnSisLin (SistLinear_t *SL);
 void prnVetor (real_t *vet, unsigned int n);
-int gradienteConjugadoPreCondic(SistLinear_t *SL, double **x, double **matPreConj, int maxIt, double tol, double matSaida[][2]);
-void copiaMat(double **matA, double **matB,int lin,int col); 
+int gradienteConjugadoPreCondic(SistLinear_t *SL, double *x, double *matPreConj, int maxIt, double tol, double matSaida[][2]);
+
 #endif // __SISLIN_H__
 

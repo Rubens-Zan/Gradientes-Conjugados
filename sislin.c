@@ -179,7 +179,6 @@ double calcBeta(double *resid,double *residAnt,double *z, int n){
   return beta; 
 }
 
-
 /**
  * @brief Calcula o proximo x<k>
  *
