@@ -334,6 +334,8 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, double *matPreConj, int maxIt,
   for (it = 0; it < maxIt; ++it)
   {
     double tIterInicio = timestamp();
+    fprintf(arqSaida, "# iter %d: ", it);
+    prnVetorArq(x, SL->n, arqSaida);
 
     // calcula alpha
     alpha = calcAlpha(resid, SL->A, direc, z, SL->n);
@@ -350,17 +352,14 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, double *matPreConj, int maxIt,
     // // calcula z
     // z<k+1> = C^-1 * r<k+1>
     copiaVetor(direc, zAnt, SL->n);
-
     calcZ(z, matPreConj, resid, SL->n);
-    // printf("z :\n");
-    // prnVetor (z, SL->n);
-    fprintf(arqSaida, "# iter %d: ", it);
-    prnVetorArq(x, SL->n, arqSaida);
+   
 
     // // calcula erro
     // // ERRO = r<k+1> * r<k+1>
     if (tol && tol < multiplicaVetor_Vetor(resid, resid, SL->n))
     {
+      printf("tol");
       break;
     }
     // // faz o if com o  erro e tolerancia

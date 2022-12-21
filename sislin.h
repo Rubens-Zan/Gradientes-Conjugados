@@ -1,5 +1,6 @@
 #ifndef __SISLIN_H__
 #define __SISLIN_H__
+#include <stdio.h>
 
 #define COEF_MAX 32.0 // Valor máximo usado para gerar valores aleatórios de
 		      // coeficientes nos sistemas lineares.
@@ -32,6 +33,8 @@ void prnMat (double **mat, unsigned int n, unsigned int m);
 SistLinear_t *lerSisLin ();
 void prnSisLin (SistLinear_t *SL);
 void prnVetor (real_t *vet, unsigned int n);
+void prnVetorArq(real_t *v, unsigned int n, FILE *arqSaida);
+
 double calcBeta(double *resid,double *residAnt,double *z,double *zAnt, int n);
 int gradienteConjugadoPreCondic(SistLinear_t *SL, double *matPreConj, int maxIt, double tol, double matSaida[][2], FILE *arqSaida); 
 
