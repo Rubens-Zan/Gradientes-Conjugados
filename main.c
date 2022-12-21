@@ -10,8 +10,8 @@ int main(int argc, char **argv)
 {
     tComando *comando = (tComando *)malloc(sizeof(tComando));
     tratamentoEntrada(argc, argv, comando);
-    // SistLinear_t *SL = alocaSisLin(comando->dimensao+1);
-    SistLinear_t *SL = alocaSisLin(2);
+    SistLinear_t *SL = alocaSisLin(comando->dimensao+1);
+    // SistLinear_t *SL = alocaSisLin(2);
     FILE *arqSaida;
 	double matSaida[comando->nIter+1][2];
 
@@ -21,16 +21,16 @@ int main(int argc, char **argv)
     double **matIdentidade = alocarMatriz(SL->n+1,SL->n+1); 
     geraMatrizIdentidade(matIdentidade,SL->n); 
 
-    // iniSisLin(SL, comando->nDiagonais);
-    SL->A[0][0] = 4;
-    SL->A[0][1] = 1;
-    SL->A[1][0] = 1;
-    SL->A[1][1] = 3;
+    iniSisLin(SL, comando->nDiagonais);
+    // SL->A[0][0] = 4;
+    // SL->A[0][1] = 1;
+    // SL->A[1][0] = 1;
+    // SL->A[1][1] = 3;
 
-    SL->b[0] = 1;
-    SL->b[1] = 2;
-    x[0][0] = 2;
-    x[1][0] = 1;
+    // SL->b[0] = 1;
+    // SL->b[1] = 2;
+    // x[0][0] = 2;
+    // x[1][0] = 1;
 
     prnSisLin(SL); 
     printf("\n"); 
