@@ -144,21 +144,12 @@ double calcAlpha(double **resid,double **A, double **p,double **z, int n){
   transporMat(resid, residTransp, n, 1);
   transporMat(p, pTransp, n, 1);
   
-  printf("RESID TRANSP\n\n");
-  prnMat(residTransp,1,n);
-
-  printf("Z \n\n");
-
-  prnMat(z,n,1);
-  printf("\n\n");
-
   double resTxZ = formMultMatrizesGeraValor(residTransp,z,1,n,n,1); // resTxZ = resid^T * z
-  printf("REST * Z \n\n", resTxZ);
-  
-  // multMat(pTransp,A,1,n,n,n,multPtxA); // p^T * A
-  // double resPxAxP =  formMultMatrizesGeraValor(multPtxA,pTransp,1,n,n,1); // (p^T * A) * p
 
-  // alpha = resTxZ /  resPxAxP; 
+  multMat(pTransp,A,1,n,n,n,multPtxA); // p^T * A
+  double resPxAxP =  formMultMatrizesGeraValor(multPtxA,p,1,n,n,1); // (p^T * A) * p
+
+  alpha = resTxZ /  resPxAxP; 
 
   liberarMatriz(residTransp);
   liberarMatriz(pTransp);
@@ -301,9 +292,9 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, double **x, double **matPreCon
 
     // z<0> = MATPRECONJ^-1 * r<0>
     multMat(matPreConj,resid,SL->n,SL->n,SL->n,1,z); 
-
+    
     // inicia direcao inicial com o z inicial
-    copiaMat(direc,z,SL->n, 1); // d<0> = z<0>
+    copiaMat(z,direc,SL->n, 1); // d<0> = z<0>
     
     // verifica erro do x com a tolerancia 
     // loop 
@@ -315,19 +306,19 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, double **x, double **matPreCon
       copiaMat(x,xAnt,SL->n,1); // xAnterior = xAtual
 
       // calcula x
-      // calcX(x,xAnt,alpha, direc, SL->n);
-      // printf("x: \n");
-      // prnMat(x,SL->n,1);
+      calcX(x,xAnt,alpha, direc, SL->n);
+      printf("x: \n");
+      prnMat(x,SL->n,1);
 
       // // calcula residuo
-      // copiaMat(resid,residAnt,SL->n, 1); 
-      // calcResiduo(residAnt,alpha,SL->A,direc,resid,SL->n); 
-      // printf("residuo: \n");
-      // prnMat(resid,SL->n,1);
+      copiaMat(resid,residAnt,SL->n, 1); 
+      calcResiduo(residAnt,alpha,SL->A,direc,resid,SL->n); 
+      printf("residuo: \n");
+      prnMat(resid,SL->n,1);
       
       // // calcula z
-      // // z<k+1> = C^-1 * r<k+1>
-      // multMat(matPreConj,resid,SL->n,SL->n,SL->n,1,z); 
+      // z<k+1> = C^-1 * r<k+1>
+      multMat(matPreConj,resid,SL->n,SL->n,SL->n,1,z); 
       // printf("z: \n");
       // prnMat(z,SL->n,1);
       
@@ -337,12 +328,12 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, double **x, double **matPreCon
       // // faz o if com o  erro e tolerancia 
       
       // // calcula beta
-      // beta = calcBeta(resid,residAnt,z,SL->n);
+      beta = calcBeta(resid,residAnt,z,SL->n);
       // printf("BETA %d: \n", beta);
 
       // // calcula prox direcao de busca
-      // copiaMat(direc,dAnt,SL->n, 1); // pAnt = p
-      // calcProxDirecBusca(direc,resid,beta,dAnt,SL->n); 
+      copiaMat(direc,dAnt,SL->n, 1); // pAnt = p
+      calcProxDirecBusca(direc,resid,beta,dAnt,SL->n); 
       // printf("p: \n");
       // prnMat(direc,SL->n,1);
     }
