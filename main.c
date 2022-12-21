@@ -17,8 +17,11 @@ int main(int argc, char **argv)
 
 	arqSaida = fopen(comando->saida,"w+");
 	fprintf(arqSaida,"###########\n");
-    double **x = alocarMatriz(SL->n+1,2); 
-    double **matIdentidade = alocarMatriz(SL->n+1,SL->n+1); 
+    double *x = (double *) malloc (sizeof(double)*SL->n);
+
+    double *matIdentidade = (double *) malloc(sizeof(double)* SL->n); 
+	
+
     geraMatrizIdentidade(matIdentidade,SL->n); 
 
     iniSisLin(SL, comando->nDiagonais);

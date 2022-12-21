@@ -109,7 +109,7 @@ void iniSisLin (SistLinear_t *SL, unsigned int nDiagonais){
 /**
  * @brief Calcula a proxima direcao de busca p<k>
  * 
- * p[i][j]<k> = z[i][j]<k> + beta<k-1> * p[i][j]<k-1> ok;; 
+ * p<k> = z<k> + beta<k-1> * p<k-1>  
  * 
  * @param proxDir
  * @param z - z calculado 
@@ -117,16 +117,16 @@ void iniSisLin (SistLinear_t *SL, unsigned int nDiagonais){
  * @param direcAnterior - Direcao anterior calculada 
  * @return double 
  */
-void calcProxDirecBusca(double **proxDir,double **z, double beta,double **direcAnterior, int n){
-    for (int i=0; i < n;++i)
-      for(int j=0;j < 1;++j)
-        proxDir[i][j] = z[i][j] + beta * direcAnterior[i][j]; 
+void calcProxDirecBusca(double *proxDir,double *z, double beta,double *direcAnterior, int n){
+  for (int i=0; i < n;++i){
+    proxDir[i] = z[i] + (beta * direcAnterior[i]); 
+  }
 }
 
 /**
  * @brief - Calcula alpha
  * 
- * alpha = r<k>^t*z<k> / (p<k>^t*A*p<k>)  
+ * alpha = r<k>^t * z<k> / (p<k>^t * A * p<k>)  
  * 
  * @param resid - residuo calculado
  * @param A - Matriz original
@@ -135,29 +135,26 @@ void calcProxDirecBusca(double **proxDir,double **z, double beta,double **direcA
  * @param n - dimensão da matriz
  * @return double 
  */
-double calcAlpha(double **resid,double **A, double **p,double **z, int n){
+double calcAlpha(double *resid,double **A, double *p,double *z, int n){
   double alpha = 0; 
-  double **residTransp=alocarMatriz(1+1,n+1); // matriz de residuo transposta
-  double **pTransp = alocarMatriz(1+1,n+1); // matriz de direcao transposta
-  double **multPtxA =alocarMatriz(1+1,n+1);
-  
-  transporMat(resid, residTransp, n, 1);
-  transporMat(p, pTransp, n, 1);
-  
-  double resTxZ = formMultMatrizesGeraValor(residTransp,z,1,n,n,1); // resTxZ = resid^T * z
+  double *vetorAux = (double *) malloc (sizeof(double)* n);
 
-  multMat(pTransp,A,1,n,n,n,multPtxA); // p^T * A
-  double resPxAxP =  formMultMatrizesGeraValor(multPtxA,p,1,n,n,1); // (p^T * A) * p
+  double resTxZ = multiplicaVetor_Vetor(resid,z,n); // resTxZ = resid^T * z
 
-  alpha = resTxZ /  resPxAxP; 
+  multiplicaMatriz_Vetor(A,p,vetorAux,n ); // multPtxA = p * A
+  double denom =multiplicaVetor_Vetor(vetorAux,p,n); 
 
-  liberarMatriz(residTransp);
-  liberarMatriz(pTransp);
-  liberarMatriz(multPtxA);
+  alpha = resTxZ /  denom; 
+  // Verificação se resultou em NaN ou +/- infinito
+  if (isnan(alpha) || isinf(alpha))
+  {
+    fprintf(stderr, "Erro alpha(calcAlpha): %g é NaN ou +/-Infinito\n", alpha);
+    exit(1);
+  }
+  free(vetorAux);
 
   return alpha; 
 }
-
 /**
  * @brief Calcula beta com base no residuo atual e no anterior
  *
@@ -167,22 +164,18 @@ double calcAlpha(double **resid,double **A, double **p,double **z, int n){
  * @param residAnt - Resíduo da k-1-esima iteração
  * @return double - valor de beta calculado
  */
-double calcBeta(double **resid,double **residAnt,double **z, int n){
+double calcBeta(double *resid,double *residAnt,double *z, int n){
 	double beta = 0; 
-  double **residTransp=alocarMatriz(1,n+1); // matriz de residuo transposta
-	double **residAntTransp=alocarMatriz(1,n+1); // matriz do residuo anterior transposta
-  
-  transporMat(resid, residTransp, n,1);
-  transporMat(residAnt, residAntTransp, n,1);
+  double residTxZ = multiplicaVetor_Vetor(resid, z, n); // residuo * z
+  double resTantxZ = multiplicaVetor_Vetor(residAnt,z,n); // residuoAnterior * z 
 
-  double residTxZ = formMultMatrizesGeraValor(residTransp,z,1,n,n,1); 
-  double resTantxZ = formMultMatrizesGeraValor(residAntTransp,z,1,n,n,1); 
-
-  beta = residTxZ/ resTantxZ;
-
-  liberarMatriz(residAntTransp);
-  liberarMatriz(residTransp);
-
+  beta = residTxZ / resTantxZ;
+  // Verificação se resultou em NaN ou +/- infinito
+  if (isnan(beta) || isinf(beta))
+    {
+      fprintf(stderr, "Erro beta(calcbeta): %g é NaN ou +/-Infinito\n", beta);
+      exit(1);
+    }
   return beta; 
 }
 
@@ -199,13 +192,10 @@ double calcBeta(double **resid,double **residAnt,double **z, int n){
  * @param n - dimensao do sistema linear
  * @return double - Proximo x calculado
  */
-void calcX(double **proxX,double **xAnt,double alpha, double **p, int n){
-    for (int i =0;i < n;++i){
-      for (int j=0;j < 1;++j){
-        printf("\n\n aq alpha %d \n\n");
-        // proxX[i][j] = xAnt[i][j] + alpha * p[i][j]; 
-      }
-    }
+void calcX(double *proxX,double *xAnt,double alpha, double *p, int n){
+  double *vetorAux = (double *) malloc (sizeof(double)* n);
+  multiplicaInteiro_Vetor(alpha, p,vetorAux,n); //vet aux =  alpha * p
+  somaVetor(xAnt,vetorAux,proxX, n); // proxX = vet aux + x ant
 }
 
 /**
@@ -218,48 +208,19 @@ void calcX(double **proxX,double **xAnt,double alpha, double **p, int n){
  * @param residuo 
  * @param n - dimensao do sistema linear
  */
-void calcResiduo(double **residuoAnterior, double alpha, double **A, double **p, double ** residuo,int n){
-  double **matAlphaxA = alocarMatriz(n+1,n+1);
-  double **multAlphaxAxp = alocarMatriz(n+1,1+1); 
-
-  for (int i=0;i < n;++i){
-    for (int j=0;j<n;++j){
-      matAlphaxA[i][j] = alpha * A[i][j]; // alpha * A
-    }
-  }
-
-  multMat(matAlphaxA, p,n,n,n,1, multAlphaxAxp); // (alpha * A) * p  
-
-  for (int i=0;i < n;++i)
-    for(int j=0;j < 1;++j)
-      residuo[i][j] = residuoAnterior[i][j]-multAlphaxAxp[i][j];  
-
-  liberarMatriz(matAlphaxA); 
-  liberarMatriz(multAlphaxAxp); 
+void calcResiduo(double *residuoAnterior, double alpha, double **A, double *p, double *residuo,int n){
+  double *vetorAux = (double *) malloc (sizeof(double)* n);
+  multiplicaMatriz_Vetor(A,p,vetorAux,n);
+  multiplicaInteiro_Vetor(alpha,vetorAux, vetorAux, n);
+  subtraiVetor(residuoAnterior,vetorAux, residuo,n); 
 }
 
-
-/**
- * @brief Calcula o residuo inicial 
- * r0 = b - A * x0
- * @param A 
- * @param b 
- * @param x 
- * @param resid 
- */
-void calcResiduoInicial(double **A,double *b,double **x,double **resid, int n){
-  double **matAux = alocarMatriz(n,1); 
-  multMat(A, x, n,n,n,1,matAux);
-  
-  for (int i=0;i < n;++i){
-    for (int j=0;j < 1; ++j){
-      resid[i][j] =b[i] - matAux[i][j];
-    }
+void calcZ(real_t *z, real_t *inverse_c, real_t *residuo,unsigned int size){
+  for(int i=0;i<size;++i){
+    z[i] = inverse_c[i] * residuo[i];
+    // veriifcar nan 
   }
-
-  liberarMatriz(matAux); 
 }
-
 
 /**
  * @brief Metodo resolvedor de sistemas lineares pelo metodo de gradiente conjugado
@@ -272,55 +233,51 @@ void calcResiduoInicial(double **A,double *b,double **x,double **resid, int n){
  * @param matSaida - Matriz que guardara o Erro e a Norma de cada iteração
  * @return int - NUMERO DE ITERACOES
  */
-int gradienteConjugadoPreCondic(SistLinear_t *SL, double **x, double **matPreConj, int maxIt, double tol, double matSaida[][2]){
+int gradienteConjugadoPreCondic(SistLinear_t *SL, double *x, double *matPreConj, int maxIt, double tol, double matSaida[][2]){
     // inicia chute inicial com vetor de 0  
     double alpha, beta; 
-    double **resid = alocarMatriz(SL->n+1,2); // matriz de residuo 
-    double **residAnt = alocarMatriz(SL->n+1,2); // matriz de residuo anterior
-    double **direc = alocarMatriz(SL->n+1,2); // matriz de direcao de busca
-    double **dAnt = alocarMatriz(SL->n+1,2); // matriz de direcao anterior    
-    double **xAnt = alocarMatriz(SL->n+1,2); // matriz de chute anterior
-    double **z = alocarMatriz(SL->n+1,2); // matriz de 
+    double *resid = (double *) malloc (sizeof(double)*SL->n); // matriz de residuo 
+    double *residAnt = (double *) malloc (sizeof(double)*SL->n); // matriz de residuo anterior
+    double *direc = (double *) malloc (sizeof(double)*SL->n); // matriz de direcao de busca
+    double *dAnt = (double *) malloc (sizeof(double)*SL->n); // matriz de direcao anterior    
+    double *xAnt = (double *) malloc (sizeof(double)*SL->n); // matriz de chute anterior
+    double *z = (double *) malloc (sizeof(double)*SL->n); // matriz de 
   
     int it;
     // as inicializacoes estao ok!    
     // x = 0 
-    inicializarMatriz(x,SL->n,1);  
+    // inicializarMatriz(x,SL->n,1);  
+    memset(x,0,sizeof(x)*SL->n);
 
     // r<0> = b - A * x<0>
-    calcResiduoInicial(SL->A,SL->b,x,resid,SL->n);
+    // calcResiduoInicial(SL->A,SL->b,x,resid,SL->n);
+    copiaVetor(SL->b,resid,SL->n); // como chute inicial =0, copia o vetor b 
 
     // z<0> = MATPRECONJ^-1 * r<0>
-    multMat(matPreConj,resid,SL->n,SL->n,SL->n,1,z); 
-    
-    // inicia direcao inicial com o z inicial
-    copiaMat(z,direc,SL->n, 1); // d<0> = z<0>
-    
+    calcZ(z,matPreConj,resid,SL->n); 
+
+    // inicia direcao inicial com o z inicial]
+    copiaVetor(z, direc,SL->n); 
+
     // verifica erro do x com a tolerancia 
     // loop 
     for(it =0;it < maxIt;++it){
       // calcula alpha
       alpha = calcAlpha(resid,SL->A,direc,z,SL->n);
-      printf("ALPHA: %f \n", alpha);
 
-      copiaMat(x,xAnt,SL->n,1); // xAnterior = xAtual
-
+      copiaVetor(x, xAnt,SL->n); 
+      
       // calcula x
       calcX(x,xAnt,alpha, direc, SL->n);
-      printf("x: \n");
-      prnMat(x,SL->n,1);
 
-      // // calcula residuo
-      copiaMat(resid,residAnt,SL->n, 1); 
+      // calcula residuo
+      copiaVetor(resid, residAnt,SL->n); 
+
       calcResiduo(residAnt,alpha,SL->A,direc,resid,SL->n); 
-      printf("residuo: \n");
-      prnMat(resid,SL->n,1);
       
       // // calcula z
       // z<k+1> = C^-1 * r<k+1>
-      multMat(matPreConj,resid,SL->n,SL->n,SL->n,1,z); 
-      // printf("z: \n");
-      // prnMat(z,SL->n,1);
+      calcZ(z, matPreConj,resid, SL->n); 
       
       // // calcula erro 
       // // ERRO = r<k+1> * r<k+1>
@@ -329,13 +286,11 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, double **x, double **matPreCon
       
       // // calcula beta
       beta = calcBeta(resid,residAnt,z,SL->n);
-      // printf("BETA %d: \n", beta);
 
       // // calcula prox direcao de busca
-      copiaMat(direc,dAnt,SL->n, 1); // pAnt = p
-      calcProxDirecBusca(direc,resid,beta,dAnt,SL->n); 
-      // printf("p: \n");
-      // prnMat(direc,SL->n,1);
+      copiaVetor(direc, dAnt,SL->n); 
+      
+      calcProxDirecBusca(direc,z,beta,dAnt,SL->n); 
     }
 
     return it;  
@@ -376,8 +331,26 @@ void prnMat (double **mat, unsigned int n, unsigned int m){
   }
 }
 
-void copiaMat(double **matA, double **matB,int lin,int col){
-  for (int i=0;i < lin;++i)
-    for (int j=0;j < col;++j)
-      matB[i][j] = matA[i][j]; 
+
+//////////////////////////////////////
+void precondicionador_jacobi(SistLinear_t *SL, real_t *M){
+  for (int i=0;i < SL->n;++i){
+    M[i]= (real_t) 1 / SL->A[i][i]; // gera vetor com diagonais do SL
+  }
+}
+
+void precondicionador_identidade(SistLinear_t *SL, real_t *M){
+  for(int i = 0; i < SL->n;i++) {
+    M[i] = 1;
+	}
+}
+
+
+void aplicaPreCondicMat(SistLinear_t *SL, real_t *M){
+  for (int i = 0; i < SL->n; i++){
+    for (int j = 0; j < SL->n; j++){
+      if (i == j)
+        SL->A[i][j] = SL->A[i][j] * M[i];  //aplica pre condicionador se for na diagonal
+    }
+  }
 }
