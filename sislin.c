@@ -201,8 +201,10 @@ double calcBeta(double **resid,double **residAnt,double **z, int n){
  */
 void calcProxX(double **proxX,double **xAnt,double alpha, double **p, int n){
     for (int i =0;i < n;++i)
-      for (int j=0;j < 1;++j)
+      for (int j=0;j < 1;++j){
+        printf("\n\n prox %d ant %d alp%d p %d\n\n",proxX[i][j],xAnt[i][j],alpha,p[i][j]);
         proxX[i][j] = xAnt[i][j] + alpha * p[i][j]; 
+      }
 }
 
 /**
@@ -297,7 +299,7 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, double **x, double **matPreCon
     for(it =0;it < maxIt;++it){
       // calcula alpha
       alpha = calcAlpha(resid,SL->A,direc,z,SL->n);
-      printf("ALPHA %d: \n", alpha);
+      printf("ALPHA: %d \n", alpha);
 
       copiaMat(x,xAnt,SL->n,1); // xAnterior = xAtual
       // calcula x
