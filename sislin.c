@@ -323,10 +323,10 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, double *matPreConj, int maxIt,
       // printf("z :\n");
       // prnVetor (z, SL->n);
 
-      // printf("x :\n");
-      // prnVetor (x, SL->n);
-      // printf("RESID :\n");
-      // prnVetor (resid, SL->n);
+      printf("x :\n");
+      prnVetor (x, SL->n);
+      printf("RESID :\n");
+      prnVetor (resid, SL->n);
 
       // // calcula erro 
       // // ERRO = r<k+1> * r<k+1>
@@ -334,10 +334,7 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, double *matPreConj, int maxIt,
       // // faz o if com o  erro e tolerancia 
       
       // // calcula beta
-      printf("antes BETA : %f \n", beta);
-    
       beta = calcBeta(resid,residAnt,z,zAnt,SL->n);
-      printf("BETA dpois: %f \n", beta);
 
       // // calcula prox direcao de busca
       copiaVetor(direc, dAnt,SL->n); 
