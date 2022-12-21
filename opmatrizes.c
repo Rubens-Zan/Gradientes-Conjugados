@@ -1,7 +1,6 @@
 #include "utils.h"
 #include "opmatrizes.h"
 #include "sislin.h"
-#include "aritmetica.h"
 
 // performs dot product between two vectors
 double produtoEscalar(double *vetA, double *vetB, int n)
@@ -81,8 +80,6 @@ double formMultMatrizesGeraValor(double ** matA, double ** matB, int linA, int c
 	multMat(matA,matB,linA,colA, linB,colB,matrizResult);
 	double valorFormatado = matrizResult[0][0];
 
-
-	printf("VALOR FORMATADO :: %f\n", valorFormatado);
 	prnMat(matrizResult,linA, colB); 
 	
 	liberarMatriz(matrizResult);
