@@ -20,11 +20,12 @@ int main(int argc, char **argv)
     double *x = (double *) malloc (sizeof(double)*SL->n);
 
     double *matIdentidade = (double *) malloc(sizeof(double)* SL->n); 
-	
-
-    geraMatrizIdentidade(matIdentidade,SL->n); 
 
     iniSisLin(SL, comando->nDiagonais);
+    precondicionador_identidade(SL,matIdentidade);
+    aplicaPreCondicMat(SL->A, matIdentidade); 
+    geraMatrizIdentidade(matIdentidade,SL->n); 
+
     // SL->A[0][0] = 4;
     // SL->A[0][1] = 1;
     // SL->A[1][0] = 1;
@@ -43,8 +44,9 @@ int main(int argc, char **argv)
 	fclose(arqSaida);
 
     free(comando);
+    free(matIdentidade);
+    free(x);
+
     liberaSisLin(SL);
-    liberarMatriz(x); 
-    liberarMatriz(matIdentidade); 
     return 0;
 }
