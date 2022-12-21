@@ -5,7 +5,7 @@
 #include "opmatrizes.h"
 #include "sislin.h"
 #include "utils.h"
-
+#include <string.h> 
 // Alocaçao de matriz em memória. 
 SistLinear_t* alocaSisLin (unsigned int n)
 {
@@ -99,7 +99,15 @@ void iniSisLin (SistLinear_t *SL, unsigned int nDiagonais){
       SL->A[i][j] = generateRandomA(i,j,nDiagonais);
     }
   }
-  
+
+  // FAZER SER DIAGONAL DOMINANTE
+  //  FAZER O TERMO I,I SER A SOMA DE TUDO
+    for (unsigned int i=0; i<n; ++i) {
+    for (unsigned int j=0; j<n; ++j)  {
+      SL->A[i][i] += SL->A[i][j]; 
+    }
+  }
+
 }
 
 
@@ -246,7 +254,10 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, double *x, double *matPreConj,
     // as inicializacoes estao ok!    
     // x = 0 
     // inicializarMatriz(x,SL->n,1);  
-    memset(x,0,sizeof(x)*SL->n);
+    // memset(x,0,sizeof(x)*SL->n);
+    for (int i=0; i < SL->n;i++){
+      x[i] = 0;
+    }
 
     // r<0> = b - A * x<0>
     // calcResiduoInicial(SL->A,SL->b,x,resid,SL->n);
@@ -351,8 +362,12 @@ void precondicionador_identidade(SistLinear_t *SL, real_t *M){
 void aplicaPreCondicSL(SistLinear_t *SL, real_t *M){
   for (int i = 0; i < SL->n; i++){
     for (int j = 0; j < SL->n; j++){
-      if (i == j)
+      if (i == j){
         SL->A[i][j] = SL->A[i][j] * M[i];  //aplica pre condicionador se for na diagonal
+      }
+      if (i == j){
+        SL->b[i] *= M[i]; 
+      }
     }
   }
 }
