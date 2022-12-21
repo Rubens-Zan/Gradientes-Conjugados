@@ -10,7 +10,7 @@ int main(int argc, char **argv)
 {
     tComando *comando = (tComando *)malloc(sizeof(tComando));
     tratamentoEntrada(argc, argv, comando);
-    SistLinear_t *SL = alocaSisLin(comando->dimensao+1);
+    SistLinear_t *SL = alocaSisLin(comando->dimensao);
     // SistLinear_t *SL = alocaSisLin(2);
     FILE *arqSaida;
 	double matSaida[comando->nIter+1][2];
@@ -34,6 +34,7 @@ int main(int argc, char **argv)
 
     prnSisLin(SL); 
     printf("\n"); 
+
     gradienteConjugadoPreCondic(SL, x, matIdentidade, comando->nIter,comando->erroMax,matSaida);
 
 	fclose(arqSaida);

@@ -26,22 +26,22 @@ void tratamentoEntrada(int argc, char **argv, tComando *comando){
 
     for (int i=0;i<argc;++i){
         if (strcmp ( argv[i], "-n") == 0 && (i+1 < argc)){
-            comando->dimensao = atoi(argv[i+1]); 
+            comando->dimensao = atoi(argv[i+1]); // dimensao do sl
             i++; 
         }else if (strcmp ( argv[i], "-k") == 0 && (i+1 < argc)){
-           comando->nDiagonais = atoi(argv[i+1]);
+           comando->nDiagonais = atoi(argv[i+1]); // numero de diagonais
            i++;
         }else if (strcmp ( argv[i], "-p") == 0 && (i+1 < argc)){
-            comando->usarPreCondicionador= argv[i+1] > 0; 
+            comando->usarPreCondicionador = argv[i+1] > 0; // sem precondicionador ou de jacobi 
             i++;
         }else if(strcmp ( argv[i], "-i") == 0 && (i+1 < argc)){
-            comando->nIter = atoi(argv[i+1]); 
+            comando->nIter = atoi(argv[i+1]);  // numero de iteraçoes
             i++;
         }else if(strcmp ( argv[i], "-e") == 0 && (i+1 < argc)){
-            comando->erroMax = atoi(argv[i+1]); 
+            comando->erroMax = atoi(argv[i+1]);  // erro maximo
             i++;           
         }else if (strcmp ( argv[i], "-o") == 0 && (i+1 < argc)){
-           strcpy(comando->saida, argv[i+1]);
+           strcpy(comando->saida, argv[i+1]); //arquivo de saida
            i++;
         }  
     }
