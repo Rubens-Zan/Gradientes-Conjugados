@@ -136,7 +136,7 @@ void calcProxDirecBusca(double *proxDir,double *z, double beta,double *direcAnte
  * @brief - Calcula alpha
  * 
  * alpha = r<k>^t * z<k> / (p<k>^t * A * p<k>)  
- * 
+ * ok
  * @param resid - residuo calculado
  * @param A - Matriz original
  * @param p - Matriz de direção de busca calculada
@@ -180,20 +180,29 @@ double calcAlpha(double *resid,double **A, double *p,double *z, int n){
 
   return alpha; 
 }
+
 /**
  * @brief Calcula beta com base no residuo atual e no anterior
  *
  * beta<k> = (res<k+1>^T * z<k+1>)/(res<k>^T * z<k>)
- *  
- * @param resid - Residuo da k-esima iteração
- * @param residAnt - Resíduo da k-1-esima iteração
- * @return double - valor de beta calculado
+ * @param resid 
+ * @param residAnt 
+ * @param z 
+ * @param zAnt 
+ * @param n 
+ * @return double 
  */
-double calcBeta(double *resid,double *residAnt,double *z, int n){
+double calcBeta(double *resid,double *residAnt,double *z,double *zAnt, int n){
 	double beta = 0; 
-  double residTxZ = multiplicaVetor_Vetor(resid, z, n); // residuo * z
-  double resTantxZ = multiplicaVetor_Vetor(residAnt,z,n); // residuoAnterior * z 
-  printf("\nCALCBETA %f  %f\n",residTxZ,resTantxZ);
+  double residTxZ =0;
+  for (int i =0;i< n;++i){    // resTxZ = resid^T * z
+    residTxZ += resid[i] * z[i]; 
+  }
+  double resTantxZ =0;
+   for (int i =0;i< n;++i){    // res^Tant * zAnt
+    resTantxZ += residAnt[i] * zAnt[i]; 
+  }
+  // printf("\nCALCBETA %f  %f\n",residTxZ,resTantxZ);
   
   beta = residTxZ / resTantxZ;
   // Verificação se resultou em NaN ou +/- infinito
@@ -268,8 +277,9 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, double *matPreConj, int maxIt,
     double *dAnt = (double *) malloc (sizeof(double)*SL->n); // matriz de direcao anterior    
     double *xAnt = (double *) malloc (sizeof(double)*SL->n); // matriz de chute anterior
     double *z = (double *) malloc (sizeof(double)*SL->n); // matriz de 
+    double *zAnt = (double *) malloc (sizeof(double)*SL->n); // matriz de 
     double *x = (double *) malloc (sizeof(double)*SL->n);
-  
+
     int it;
     // as inicializacoes estao ok!    
     // x = 0 
@@ -294,10 +304,7 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, double *matPreConj, int maxIt,
     // loop 
     for(it =0;it < maxIt;++it){
       // calcula alpha
-      printf("antes ALPHA : %f \n", alpha);
-
       alpha = calcAlpha(resid,SL->A,direc,z,SL->n);
-      printf("ALPHA depois... : %f \n", alpha);
 
       copiaVetor(x, xAnt,SL->n); 
       
@@ -310,6 +317,8 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, double *matPreConj, int maxIt,
       
       // // calcula z
       // z<k+1> = C^-1 * r<k+1>
+      copiaVetor(direc, zAnt,SL->n); 
+     
       calcZ(z, matPreConj,resid, SL->n); 
       // printf("z :\n");
       // prnVetor (z, SL->n);
@@ -325,8 +334,10 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, double *matPreConj, int maxIt,
       // // faz o if com o  erro e tolerancia 
       
       // // calcula beta
-      beta = calcBeta(resid,residAnt,z,SL->n);
-      // printf("BETA : %f \n", beta);
+      printf("antes BETA : %f \n", beta);
+    
+      beta = calcBeta(resid,residAnt,z,zAnt,SL->n);
+      printf("BETA dpois: %f \n", beta);
 
       // // calcula prox direcao de busca
       copiaVetor(direc, dAnt,SL->n); 

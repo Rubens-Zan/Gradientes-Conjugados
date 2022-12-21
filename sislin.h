@@ -32,7 +32,7 @@ void prnMat (double **mat, unsigned int n, unsigned int m);
 SistLinear_t *lerSisLin ();
 void prnSisLin (SistLinear_t *SL);
 void prnVetor (real_t *vet, unsigned int n);
-double calcBeta(double *resid,double *residAnt,double *z, int n);
+double calcBeta(double *resid,double *residAnt,double *z,double *zAnt, int n);
 int gradienteConjugadoPreCondic(SistLinear_t *SL, double *matPreConj, int maxIt, double tol, double matSaida[][2]);
 void precondicionador_identidade(SistLinear_t *SL, real_t *M);
 void precondicionador_jacobi(SistLinear_t *SL, real_t *M);
