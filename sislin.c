@@ -176,7 +176,8 @@ double calcBeta(double *resid,double *residAnt,double *z, int n){
 	double beta = 0; 
   double residTxZ = multiplicaVetor_Vetor(resid, z, n); // residuo * z
   double resTantxZ = multiplicaVetor_Vetor(residAnt,z,n); // residuoAnterior * z 
-
+  printf("\nCALCBETA %f  %f\n",residTxZ,resTantxZ);
+  
   beta = residTxZ / resTantxZ;
   // Verificação se resultou em NaN ou +/- infinito
   if (isnan(beta) || isinf(beta))
@@ -203,6 +204,7 @@ void calcX(double *proxX,double *xAnt,double alpha, double *p, int n){
   double *vetorAux = (double *) malloc (sizeof(double)* n);
   multiplicaInteiro_Vetor(alpha, p,vetorAux,n); //vet aux =  alpha * p
   somaVetor(xAnt,vetorAux,proxX, n); // proxX = vet aux + x ant
+  free(vetorAux); 
 }
 
 /**
@@ -240,7 +242,7 @@ void calcZ(real_t *z, real_t *inverse_c, real_t *residuo,unsigned int size){
  * @param matSaida - Matriz que guardara o Erro e a Norma de cada iteração
  * @return int - NUMERO DE ITERACOES
  */
-int gradienteConjugadoPreCondic(SistLinear_t *SL, double *x, double *matPreConj, int maxIt, double tol, double matSaida[][2]){
+int gradienteConjugadoPreCondic(SistLinear_t *SL, double *matPreConj, int maxIt, double tol, double matSaida[][2]){
     // inicia chute inicial com vetor de 0  
     double alpha, beta; 
     double *resid = (double *) malloc (sizeof(double)*SL->n); // matriz de residuo 
@@ -249,6 +251,7 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, double *x, double *matPreConj,
     double *dAnt = (double *) malloc (sizeof(double)*SL->n); // matriz de direcao anterior    
     double *xAnt = (double *) malloc (sizeof(double)*SL->n); // matriz de chute anterior
     double *z = (double *) malloc (sizeof(double)*SL->n); // matriz de 
+    double *x = (double *) malloc (sizeof(double)*SL->n);
   
     int it;
     // as inicializacoes estao ok!    

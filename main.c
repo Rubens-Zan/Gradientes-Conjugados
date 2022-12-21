@@ -17,7 +17,6 @@ int main(int argc, char **argv)
 
 	arqSaida = fopen(comando->saida,"w+");
 	fprintf(arqSaida,"###########\n");
-    double *x = (double *) malloc (sizeof(double)*SL->n);
 
     double *matIdentidade = (double *) malloc(sizeof(double)* SL->n); 
 
@@ -38,7 +37,7 @@ int main(int argc, char **argv)
     prnSisLin(SL); 
     printf("\n"); 
 
-    gradienteConjugadoPreCondic(SL, x, matIdentidade, comando->nIter,comando->erroMax,matSaida);
+    gradienteConjugadoPreCondic(SL, matIdentidade, comando->nIter,comando->erroMax,matSaida);
 
 	fclose(arqSaida);
 
