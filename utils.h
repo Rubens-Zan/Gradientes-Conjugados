@@ -1,7 +1,8 @@
 #include <stdbool.h>
 
 typedef struct tComando {
-    int dimensao,nDiagonais, nIter, erroMax;
+    int dimensao,nDiagonais, nIter;
+    double erroMax;
     bool usarPreCondicionador;   
     char saida[100];
 } tComando;

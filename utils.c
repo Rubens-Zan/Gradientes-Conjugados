@@ -40,7 +40,7 @@ void tratamentoEntrada(int argc, char **argv, tComando *comando){
             comando->nIter = atoi(argv[i+1]);  // numero de iteraçoes
             i++;
         }else if(strcmp ( argv[i], "-e") == 0 && (i+1 < argc)){
-            comando->erroMax = atoi(argv[i+1]);  // erro maximo
+            comando->erroMax = atof(argv[i+1]);  // erro maximo
             i++;           
         }else if (strcmp ( argv[i], "-o") == 0 && (i+1 < argc)){
            strcpy(comando->saida, argv[i+1]); //arquivo de saida
