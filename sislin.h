@@ -1,5 +1,6 @@
 #ifndef __SISLIN_H__
 #define __SISLIN_H__
+
 #include <stdio.h>
 
 #define COEF_MAX 32.0 // Valor máximo usado para gerar valores aleatórios de
@@ -25,6 +26,7 @@ void liberaSisLin (SistLinear_t *SL);
 void iniSisLin (SistLinear_t *SL, unsigned int nDiagonais);
 
 //
+void formataSLGradConj(SistLinear_t *SL); 
 
 
 //
@@ -36,8 +38,8 @@ void prnVetor (real_t *vet, unsigned int n);
 void prnVetorArq(real_t *v, unsigned int n, FILE *arqSaida);
 
 double calcBeta(double *resid,double *residAnt,double *z,double *zAnt, int n);
-int gradienteConjugadoPreCondic(SistLinear_t *SL, double *matPreConj, int maxIt, double tol, double matSaida[][2], FILE *arqSaida); 
-
+int gradienteConjugadoPreCondic(SistLinear_t *SL, int maxIt, double tol, double matSaida[][2], FILE *arqSaida);
+int gradienteConjugado(SistLinear_t *SL,int maxIt, double tol, double matSaida[][2], FILE *arqSaida);
 void precondicionador_identidade(SistLinear_t *SL, real_t *M);
 void precondicionador_jacobi(SistLinear_t *SL, real_t *M);
 void aplicaPreCondicSL(SistLinear_t *SL, real_t *M);

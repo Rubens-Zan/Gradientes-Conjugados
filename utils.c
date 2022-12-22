@@ -22,6 +22,9 @@ double timestamp(void)
  */
 void tratamentoEntrada(int argc, char **argv, tComando *comando){
     comando->erroMax = 0; // se o erro for 0, vai ser desconsiderado
+    comando->nIter = 0;
+    comando->dimensao = 0;
+    comando->dimensao = 0;
     
     for (int i=0;i<argc;++i){
         if (strcmp ( argv[i], "-n") == 0 && (i+1 < argc)){
@@ -43,6 +46,11 @@ void tratamentoEntrada(int argc, char **argv, tComando *comando){
            strcpy(comando->saida, argv[i+1]); //arquivo de saida
            i++;
         }  
+    }
+
+    if (!comando->dimensao || !comando->nDiagonais || !comando->nIter){
+        fprintf (stderr, "ERRO argumento invalido\n");
+		exit(1);
     }
 
 }

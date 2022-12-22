@@ -17,23 +17,20 @@ int main(int argc, char **argv)
 
 	arqSaida = fopen(comando->saida,"w+");
     
-    double tmInicioPreConj, tmfinal;
     
 	fprintf(arqSaida,"#rzl20 Rubens Zandomenighi Laszlo \n");
 	fprintf(arqSaida,"# \n");
 
 
     iniSisLin(SL, comando->nDiagonais);
-    tmInicioPreConj = timestamp(); 
 
-    double *matPreConj = (double *) malloc(sizeof(double)* SL->n); 
+    // double *matPreConj = (double *) malloc(sizeof(double)* SL->n); 
     if (comando->usarPreCondicionador){
-        precondicionador_identidade(SL,matPreConj);
-    } else {
-        precondicionador_jacobi(SL, matPreConj); 
-    }
+        gradienteConjugadoPreCondic(SL, comando->nIter,comando->erroMax,matSaida,arqSaida);
 
-    aplicaPreCondicSL(SL, matPreConj); 
+    } else {
+        gradienteConjugadoPreCondic(SL,comando->nIter,comando->erroMax,matSaida, arqSaida); 
+    }
 
     // SL->A[0][0] = 4;
     // SL->A[0][1] = 1;
@@ -48,14 +45,9 @@ int main(int argc, char **argv)
     prnSisLin(SL); 
     printf("\n"); 
 
-    gradienteConjugadoPreCondic(SL, matPreConj, comando->nIter,comando->erroMax,matSaida,arqSaida);
 
 	fclose(arqSaida);
-
     free(comando);
-    free(matPreConj);
-    // free(x);
-
     liberaSisLin(SL);
     return 0;
 }
