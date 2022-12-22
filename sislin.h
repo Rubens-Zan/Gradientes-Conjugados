@@ -36,6 +36,8 @@ SistLinear_t *lerSisLin ();
 void prnSisLin (SistLinear_t *SL);
 void prnVetor (real_t *vet, unsigned int n);
 void prnVetorArq(real_t *v, unsigned int n, FILE *arqSaida);
+double calcErroNormaEuc(double *b, double **A, double *x, int n);
+double calcNormaMax(double *xAnt,double *x, int n);
 
 double calcBeta(double *resid,double *residAnt,double *z,double *zAnt, int n);
 int gradienteConjugadoPreCondic(SistLinear_t *SL, int maxIt, double tol, double matSaida[][2], FILE *arqSaida);

@@ -1,11 +1,16 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+#include <math.h>
 
 #include "opmatrizes.h"
 #include "sislin.h"
 #include "utils.h"
 #include <string.h>
+
+// Valor absoluto de um número. Alternativa ao uso da função 'fabs()'
+#define ABS(num)  ((num) < 0.0 ? -(num) : (num))
+
 // Alocaçao de matriz em memória.
 SistLinear_t *alocaSisLin(unsigned int n)
 {
@@ -307,6 +312,73 @@ void formataSLGradConj(SistLinear_t *SL)
   multiplicaMatriz_Vetor(matAux, SL->b, SL->b, SL->n); // poder estar errado
 };
 
+//////////////////////////////////////
+void precondicionador_jacobi(SistLinear_t *SL, real_t *M)
+{
+  for (int i = 0; i < SL->n; ++i)
+  {
+    M[i] = (real_t)1 / SL->A[i][i]; // gera vetor com diagonais do SL
+  }
+}
+
+void precondicionador_identidade(SistLinear_t *SL, real_t *M)
+{
+  for (int i = 0; i < SL->n; i++)
+  {
+    M[i] = 1;
+  }
+}
+
+void aplicaPreCondicSL(SistLinear_t *SL, real_t *M)
+{
+  for (int i = 0; i < SL->n; i++)
+  {
+    for (int j = 0; j < SL->n; j++)
+    {
+      if (i == j)
+      {
+        SL->A[i][j] = SL->A[i][j] * M[i]; // aplica pre condicionador se for na diagonal
+      }
+      if (i == j)
+      {
+        SL->b[i] *= M[i];
+      }
+    }
+  }
+}
+
+/******************NORMAS**********************************/
+/**
+ * @brief 
+ *  r = b - Ax
+ * @param b 
+ * @param A 
+ * @param x 
+ * @return double 
+ */
+double calcErroNormaEuc(double *b, double **A, double *x, int n){
+  double *vAux = (double *)malloc(sizeof(double) * n);     // matriz de chute anterior
+  double normaEucl = 0;
+  multiplicaMatriz_Vetor(A,x,vAux, n);
+  subtraiVetor(b,vAux, vAux,n);
+  normaEucl = sqrt(multiplicaVetor_Vetor(vAux, vAux, n));
+
+  return normaEucl;
+}
+
+double calcNormaMaxRel(double *xAnt,double *x, int n){
+  double normaMaxRel = 0; 
+  for (int i=0;i < n;++i){
+    if ( (x[i] - xAnt[i]/ x[i]) > normaMaxRel){
+      normaMaxRel =  ABS(x[i] - xAnt[i])/ABS(x[i]); 
+    }
+  }
+
+  return normaMaxRel; 
+}
+
+/******************FUNCOES GRADIENTE CONJUGADO E PRE CONJUGADO**********************************/
+
 /**
  * @brief Metodo resolvedor de sistemas lineares pelo metodo de gradiente conjugado com uso do pre condicionador de jacobi
  *
@@ -360,22 +432,23 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, int maxIt, double tol, double 
   for (it = 0; it < maxIt; ++it)
   {
     double tIterInicio = timestamp();
-    fprintf(arqSaida, "# iter %d: ", it);
-    prnVetorArq(x, SL->n, arqSaida);
+    
 
     // ALPHA = z * r / pT * A * p
     alpha = calcAlpha(resid, SL->A, direc, z, SL->n);
     // calcula novo x
     copiaVetor(x, xAnt, SL->n); // xant = x
     calcX(x, xAnt, alpha, direc, SL->n);
+
+    double normaMaxRel =calcNormaMaxRel(xAnt, x, SL->n); 
+    fprintf(arqSaida, "# iter %d: %.15g", it, normaMaxRel);
     // calcula novo residuo
     copiaVetor(resid, residAnt, SL->n);
     calcResiduo(residAnt, alpha, SL->A, direc, resid, SL->n);
+
     // if erro
     // o erro aproximado em x após a k-ésima iteração (max|xi - xi-1|);
-    // fprintf(arqSaida, "# iteração %d: %.15g", it,erroAproximado);
-
-    if (tol != 0 && 0)
+    if (tol != 0 && tol > normaMaxRel)
     {
       tMedioIter += timestamp() - tIterInicio;
       break;
@@ -394,7 +467,7 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, int maxIt, double tol, double 
   }
 
   // A norma euclidiana do resíduo (||r||), onde r = b - Ax
-  // fprintf(arqSaida, "# residuo: %.15g", normaEuclidResid);
+  fprintf(arqSaida, "# residuo: || %.15g ||", calcErroNormaEuc(SL->b,SL->A, x, SL->n));
 
   fprintf(arqSaida, "# Tempo PC: %.15g \n", tempoPreCond);
   tMedioIter = tMedioIter / it;
@@ -469,6 +542,9 @@ int gradienteConjugado(SistLinear_t *SL, int maxIt, double tol, double matSaida[
     // x1 = x0 +alpha * p
     copiaVetor(x, xAnt, SL->n);
     calcX(x, xAnt, alpha, direc, SL->n);
+    double normaMaxRel =calcNormaMaxRel(xAnt, x, SL->n); 
+    fprintf(arqSaida, "# iter %d: %.15g", it, normaMaxRel);
+
     // calcular novo residuo
     // r1= r0 - alpha0 * A *p0
     copiaVetor(resid, residAnt, SL->n);
@@ -476,7 +552,7 @@ int gradienteConjugado(SistLinear_t *SL, int maxIt, double tol, double matSaida[
 
     // normaMaxErroRelativo
     // if
-    if (tol != 0 && 0)
+    if (tol != 0 && tol > normaMaxRel)
     {
       tMedioIter += timestamp() - tIterInicio;
       break;
@@ -493,6 +569,8 @@ int gradienteConjugado(SistLinear_t *SL, int maxIt, double tol, double matSaida[
     tMedioIter += timestamp() - tIterInicio;
   }
 
+  fprintf(arqSaida, "# residuo: || %.15g ||", calcErroNormaEuc(SL->b,SL->A, x, SL->n));
+  
   // tempo final
   fprintf(arqSaida, "# Tempo PC: %.15g \n", tempoPreCond);
   tMedioIter = tMedioIter / it;
@@ -553,40 +631,5 @@ void prnMat(double **mat, unsigned int n, unsigned int m)
     for (unsigned int j = 0; j < m; ++j)
       printf(" %f", mat[i][j]);
     printf("\n");
-  }
-}
-
-//////////////////////////////////////
-void precondicionador_jacobi(SistLinear_t *SL, real_t *M)
-{
-  for (int i = 0; i < SL->n; ++i)
-  {
-    M[i] = (real_t)1 / SL->A[i][i]; // gera vetor com diagonais do SL
-  }
-}
-
-void precondicionador_identidade(SistLinear_t *SL, real_t *M)
-{
-  for (int i = 0; i < SL->n; i++)
-  {
-    M[i] = 1;
-  }
-}
-
-void aplicaPreCondicSL(SistLinear_t *SL, real_t *M)
-{
-  for (int i = 0; i < SL->n; i++)
-  {
-    for (int j = 0; j < SL->n; j++)
-    {
-      if (i == j)
-      {
-        SL->A[i][j] = SL->A[i][j] * M[i]; // aplica pre condicionador se for na diagonal
-      }
-      if (i == j)
-      {
-        SL->b[i] *= M[i];
-      }
-    }
   }
 }

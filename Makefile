@@ -5,7 +5,7 @@
 
 CC = gcc
 EXEC = cgSolver
-CFLAG = -Wall -std=c99
+CFLAG = -Wall -std=c99 -lm
 MODULOS = opmatrizes \
 	sislin \
 	utils 
