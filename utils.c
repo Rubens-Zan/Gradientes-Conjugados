@@ -34,7 +34,7 @@ void tratamentoEntrada(int argc, char **argv, tComando *comando){
            comando->nDiagonais = atoi(argv[i+1]); // numero de diagonais
            i++;
         }else if (strcmp ( argv[i], "-p") == 0 && (i+1 < argc)){
-            comando->usarPreCondicionador = argv[i+1] > 0 ? true : false; // sem precondicionador ou de jacobi 
+            comando->usarPreCondicionador = atoi(argv[i+1]) > 0 ? true : false; // sem precondicionador ou de jacobi 
             i++;
         }else if(strcmp ( argv[i], "-i") == 0 && (i+1 < argc)){
             comando->nIter = atoi(argv[i+1]);  // numero de iteraçoes

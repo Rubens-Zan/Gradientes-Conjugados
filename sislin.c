@@ -162,14 +162,14 @@ double calcAlpha(double *resid, double **A, double *p, double *z, int n)
   double *vetorAux = (double *)malloc(sizeof(double) * n);
 
   double resTxZ = 0;
-  
+
   for (int i = 0; i < n; ++i)
   { // resTxZ = resid^T * z
     resTxZ += resid[i] * z[i];
   }
 
   for (int i = 0; i < n; ++i)
-  { // multPtxA = p * A
+  { // multPtxA = pT * A
     vetorAux[i] = 0;
     for (int j = 0; j < n; ++j)
     {
@@ -222,7 +222,6 @@ double calcBeta(double *resid, double *residAnt, double *z, double *zAnt, int n)
   { // res^Tant * zAnt
     resTantxZ += residAnt[i] * zAnt[i];
   }
-  // printf("\nCALCBETA %f  %f\n",residTxZ,resTantxZ);
 
   beta = residTxZ / resTantxZ;
   // Verificação se resultou em NaN ou +/- infinito
@@ -248,10 +247,10 @@ double calcBeta(double *resid, double *residAnt, double *z, double *zAnt, int n)
  */
 void calcX(double *proxX, double *xAnt, double alpha, double *p, int n)
 {
-  double *vetorAux = (double *)malloc(sizeof(double) * n);
-  multiplicaInteiro_Vetor(alpha, p, vetorAux, n); // vet aux =  alpha * p
-  somaVetor(xAnt, vetorAux, proxX, n);            // proxX = vet aux + x ant
-  free(vetorAux);
+  for (int i = 0; i < n; ++i)
+  {
+    proxX[i] = xAnt[i] + (alpha * p[i]);
+  }
 }
 
 /**
@@ -267,9 +266,21 @@ void calcX(double *proxX, double *xAnt, double alpha, double *p, int n)
 void calcResiduo(double *residuoAnterior, double alpha, double **A, double *p, double *residuo, int n)
 {
   double *vetorAux = (double *)malloc(sizeof(double) * n);
-  multiplicaMatriz_Vetor(A, p, vetorAux, n);
-  multiplicaInteiro_Vetor(alpha, vetorAux, vetorAux, n);
-  subtraiVetor(residuoAnterior, vetorAux, residuo, n);
+
+  // alpha * A * p<k>
+  for (int i = 0; i < n; ++i)
+  { // OK
+    vetorAux[i] = 0;
+    for (int j = 0; j < n; j++)
+    {
+      vetorAux[i] += (alpha * A[i][j]) * p[j];
+    }
+  }
+
+  for (int i = 0; i < n; ++i)
+  {
+    residuo[i] = residuoAnterior[i] - vetorAux[i]; // ok
+  }
 }
 
 void calcZ(real_t *z, real_t *inverse_c, real_t *residuo, unsigned int size)
@@ -283,27 +294,28 @@ void calcZ(real_t *z, real_t *inverse_c, real_t *residuo, unsigned int size)
 
 /**
  * @brief Função para formar Sistema linear para ficar no formato (A^T) * A * x = (A^T) * b, facilita a conversão
- * 
- * @param SL 
+ *
+ * @param SL
  */
-void formataSLGradConj(SistLinear_t *SL){
-  // A = A^T * A  
+void formataSLGradConj(SistLinear_t *SL)
+{
+  // A = A^T * A
   // b = A^T * b
-  double **matAux = alocarMatriz(SL->n,SL->n); 
-  transporMat(SL->A,matAux,SL->n,SL->n);
-  multMat(SL->A,matAux,SL->n,SL->n,SL->n,SL->n, SL->A );
-  multiplicaMatriz_Vetor(matAux, SL->b,SL->b, SL->n); 
+  double **matAux = alocarMatriz(SL->n, SL->n);
+  transporMat(SL->A, matAux, SL->n, SL->n);
+  multMat(SL->A, matAux, SL->n, SL->n, SL->n, SL->n, SL->A);
+  multiplicaMatriz_Vetor(matAux, SL->b, SL->b, SL->n); // poder estar errado
 };
 
 /**
- * @brief Metodo resolvedor de sistemas lineares pelo metodo de gradiente conjugado com uso do pre condicionador de jacobi 
- * 
- * @param SL 
- * @param maxIt 
- * @param tol 
- * @param matSaida 
- * @param arqSaida 
- * @return int 
+ * @brief Metodo resolvedor de sistemas lineares pelo metodo de gradiente conjugado com uso do pre condicionador de jacobi
+ *
+ * @param SL
+ * @param maxIt
+ * @param tol
+ * @param matSaida
+ * @param arqSaida
+ * @return int
  */
 int gradienteConjugadoPreCondic(SistLinear_t *SL, int maxIt, double tol, double matSaida[][2], FILE *arqSaida)
 {
@@ -312,7 +324,7 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, int maxIt, double tol, double 
   double *resid = (double *)malloc(sizeof(double) * SL->n);    // matriz de residuo
   double *residAnt = (double *)malloc(sizeof(double) * SL->n); // matriz de residuo anterior
   double *direc = (double *)malloc(sizeof(double) * SL->n);    // matriz de direcao de busca
-  double *direcAnt = (double *)malloc(sizeof(double) * SL->n);     // matriz de direcao anterior
+  double *direcAnt = (double *)malloc(sizeof(double) * SL->n); // matriz de direcao anterior
   double *xAnt = (double *)malloc(sizeof(double) * SL->n);     // matriz de chute anterior
   double *z = (double *)malloc(sizeof(double) * SL->n);        // matriz de
   double *zAnt = (double *)malloc(sizeof(double) * SL->n);     // matriz de
@@ -320,27 +332,28 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, int maxIt, double tol, double 
 
   double *auxMatJacobi = (double *)malloc(sizeof(double) * SL->n);
 
-  double tMedioIter,tempoResid, tempoPreCond;
-  tMedioIter =0;
-  tempoResid = timestamp();; 
+  double tMedioIter, tempoResid, tempoPreCond;
+  tMedioIter = 0;
+  tempoResid = timestamp();
+  ;
 
   int it;
-  
+
   // Ajusta tipos iniciais
   // A=(A^T) * A
   // b=(A^T) * b
-  formataSLGradConj(SL); 
+  formataSLGradConj(SL);
   // (M^-1) * A
   // (M^-1) * b
-  precondicionador_jacobi(SL, auxMatJacobi); 
-  aplicaPreCondicSL(SL, auxMatJacobi); 
+  precondicionador_jacobi(SL, auxMatJacobi);
+  aplicaPreCondicSL(SL, auxMatJacobi);
   tempoPreCond = timestamp() - tempoResid;
   // residuo = b
   copiaVetor(SL->b, resid, SL->n); // como x inicial igual a 0, desconsidero o r = b - (A * x)
   // calcula z
-  calcZ(z,auxMatJacobi, resid, SL->n); 
-  // direc = z 
-  copiaVetor(z, direc, SL->n); 
+  calcZ(z, auxMatJacobi, resid, SL->n);
+  // direc = z
+  copiaVetor(z, direc, SL->n);
 
   // verifica erro do x com a tolerancia
   // loop
@@ -351,38 +364,40 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, int maxIt, double tol, double 
     prnVetorArq(x, SL->n, arqSaida);
 
     // ALPHA = z * r / pT * A * p
-    alpha = calcAlpha(resid,SL->A,direc,z,SL->n); 
+    alpha = calcAlpha(resid, SL->A, direc, z, SL->n);
     // calcula novo x
-    copiaVetor(x, xAnt,SL->n); // xant = x
-    calcX(x,xAnt, alpha, direc, SL->n);
+    copiaVetor(x, xAnt, SL->n); // xant = x
+    calcX(x, xAnt, alpha, direc, SL->n);
     // calcula novo residuo
-    copiaVetor(resid, residAnt, SL->n); 
-    calcResiduo(residAnt, alpha, SL->A, direc, resid, SL->n); 
+    copiaVetor(resid, residAnt, SL->n);
+    calcResiduo(residAnt, alpha, SL->A, direc, resid, SL->n);
     // if erro
     // o erro aproximado em x após a k-ésima iteração (max|xi - xi-1|);
     // fprintf(arqSaida, "# iteração %d: %.15g", it,erroAproximado);
 
-    if (tol != 0 && 0){
-      break; 
+    if (tol != 0 && 0)
+    {
+      tMedioIter += timestamp() - tIterInicio;
+      break;
     }
     // z0 = z
-    copiaVetor(z,zAnt, SL->n); 
-    // calcula z 
-    calcZ(z, auxMatJacobi, resid, SL->n); 
+    copiaVetor(z, zAnt, SL->n);
+    // calcula z
+    calcZ(z, auxMatJacobi, resid, SL->n);
     // beta = rt * z / rtant *zant
     beta = calcBeta(resid, residAnt, z, zAnt, SL->n);
     // calcula prox direcao
-    copiaVetor(direc,direcAnt,SL->n); // dAnt = d
-    calcProxDirecBusca(direc,z,beta,direcAnt,SL->n);
+    copiaVetor(direc, direcAnt, SL->n); // dAnt = d
+    calcProxDirecBusca(direc, z, beta, direcAnt, SL->n);
 
-    tMedioIter += timestamp() - tIterInicio; 
+    tMedioIter += timestamp() - tIterInicio;
   }
 
   // A norma euclidiana do resíduo (||r||), onde r = b - Ax
-  //fprintf(arqSaida, "# residuo: %.15g", normaEuclidResid);
+  // fprintf(arqSaida, "# residuo: %.15g", normaEuclidResid);
 
   fprintf(arqSaida, "# Tempo PC: %.15g \n", tempoPreCond);
-  tMedioIter = tMedioIter / it; 
+  tMedioIter = tMedioIter / it;
   fprintf(arqSaida, "# Tempo tMedioIter:: %.15g \n", tMedioIter);
   tempoResid = timestamp() - tempoResid;
   fprintf(arqSaida, "# Tempo residuo:: %.15g", tempoResid);
@@ -401,52 +416,86 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, int maxIt, double tol, double 
 
 /**
  * @brief Metodo resolvedor de sistemas lineares pelo metodo de gradiente conjugado
- * 
- * @param SL 
- * @param maxIt 
- * @param tol 
- * @param matSaida 
- * @param arqSaida 
- * @return int 
+ *
+ * @param SL
+ * @param maxIt
+ * @param tol
+ * @param matSaida
+ * @param arqSaida
+ * @return int
  */
-int gradienteConjugado(SistLinear_t *SL,int maxIt, double tol, double matSaida[][2], FILE *arqSaida){
-  double tMedioIter,tempoResid, tempoPreCond;
+int gradienteConjugado(SistLinear_t *SL, int maxIt, double tol, double matSaida[][2], FILE *arqSaida)
+{
+  double tMedioIter, tempoResid, tempoPreCond;
   double alpha, beta;
   double *resid = (double *)malloc(sizeof(double) * SL->n);    // matriz de residuo
   double *residAnt = (double *)malloc(sizeof(double) * SL->n); // matriz de residuo anterior
   double *direc = (double *)malloc(sizeof(double) * SL->n);    // matriz de direcao de busca
-  double *direcAnt = (double *)malloc(sizeof(double) * SL->n);     // matriz de direcao anterior
+  double *direcAnt = (double *)malloc(sizeof(double) * SL->n); // matriz de direcao anterior
   double *xAnt = (double *)malloc(sizeof(double) * SL->n);     // matriz de chute anterior
   double *x = (double *)malloc(sizeof(double) * SL->n);
+  double *vetorAux = (double *)malloc(sizeof(double) * SL->n);
   int it = 0;
-  tMedioIter =0;
+  tMedioIter = 0;
 
   tempoResid = timestamp();
   // transforma SL em ax=b em (A^T)Ax = A^t *b
-  formataSLGradConj(SL); 
+  formataSLGradConj(SL);
+  
+  tempoPreCond = timestamp() - tempoResid;
 
   // residuo = b
-  copiaVetor(SL->b,resid, SL->n); 
+  copiaVetor(SL->b, resid, SL->n);
   // direcao = residuo
-  copiaVetor(resid, direc, SL->n); 
+  copiaVetor(resid, direc, SL->n);
 
   // for
-  for (it=0;it < maxIt;++it){
+  for (it = 0; it < maxIt; ++it)
+  {
+    double tIterInicio = timestamp();
 
-  // escalarAlpha = (residuo * residuo^T) / (p^t * A * p )
-  // calcula novo x 
-  // calcular novo residuo
-  // normaMaxErroRelativo
-  // if
+    // CALCULA APLHA
+    // Alpha = (residuo^t * residuo) / (p^t * A * p )
+    for (int i = 0; i < SL->n; ++i)
+    { // multPtxA = pT * A
+      vetorAux[i] = 0;
+      for (int j = 0; j < SL->n; ++j)
+      {
+        vetorAux[i] = direc[j] * SL->A[j][i];
+      }
+    }
+    alpha = (multiplicaVetor_Vetor(resid, resid, SL->n)) / (multiplicaVetor_Vetor(vetorAux, direc, SL->n));
+    // calcula novo x
+    // x1 = x0 +alpha * p
+    copiaVetor(x, xAnt, SL->n);
+    calcX(x, xAnt, alpha, direc, SL->n);
+    // calcular novo residuo
+    // r1= r0 - alpha0 * A *p0
+    copiaVetor(resid, residAnt, SL->n);
+    calcResiduo(residAnt, alpha, SL->A, direc, resid, SL->n);
 
-  // escalarBeta = vetor residuo * vetor^t residuo / vetor residuo anterior * vetor^t residuo anterior 
-  // calcula prox direc
+    // normaMaxErroRelativo
+    // if
+    if (tol != 0 && 0)
+    {
+      tMedioIter += timestamp() - tIterInicio;
+      break;
+    }
+  
+    // escalarBeta = vetor residuo^t * vetor residuo / vetor residuo anteriorT * vetor residuo anterior
+    beta = multiplicaVetor_Vetor(resid, resid, SL->n) / multiplicaVetor_Vetor(residAnt, residAnt, SL->n);
+  
+    // calcula prox direc
+    // P = R + b0 * pAnt
+    copiaVetor(direc, direcAnt, SL->n);
+    calcProxDirecBusca(direc, resid, beta, direcAnt, SL->n);
+
+    tMedioIter += timestamp() - tIterInicio;
   }
-
 
   // tempo final
   fprintf(arqSaida, "# Tempo PC: %.15g \n", tempoPreCond);
-  tMedioIter = tMedioIter / it; 
+  tMedioIter = tMedioIter / it;
   fprintf(arqSaida, "# Tempo tMedioIter:: %.15g \n", tMedioIter);
   tempoResid = timestamp() - tempoResid;
   fprintf(arqSaida, "# Tempo residuo:: %.15g", tempoResid);
@@ -457,7 +506,7 @@ int gradienteConjugado(SistLinear_t *SL,int maxIt, double tol, double matSaida[]
   free(xAnt);
   free(x);
 
-  return it; 
+  return it;
 }
 
 /***********************************************************************/
