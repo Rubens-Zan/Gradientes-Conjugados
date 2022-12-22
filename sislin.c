@@ -441,7 +441,7 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, int maxIt, double tol, double 
     calcX(x, xAnt, alpha, direc, SL->n);
 
     double normaMaxRel =calcNormaMaxRel(xAnt, x, SL->n); 
-    fprintf(arqSaida, "# iter %d: %.15g", it, normaMaxRel);
+    fprintf(arqSaida, "# iter %d: %.15g\n", it, normaMaxRel);
     // calcula novo residuo
     copiaVetor(resid, residAnt, SL->n);
     calcResiduo(residAnt, alpha, SL->A, direc, resid, SL->n);
@@ -467,13 +467,13 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, int maxIt, double tol, double 
   }
 
   // A norma euclidiana do resíduo (||r||), onde r = b - Ax
-  fprintf(arqSaida, "# residuo: || %.15g ||", calcErroNormaEuc(SL->b,SL->A, x, SL->n));
+  fprintf(arqSaida, "# residuo: || %.15g || \n", calcErroNormaEuc(SL->b,SL->A, x, SL->n));
 
   fprintf(arqSaida, "# Tempo PC: %.15g \n", tempoPreCond);
   tMedioIter = tMedioIter / it;
   fprintf(arqSaida, "# Tempo tMedioIter:: %.15g \n", tMedioIter);
   tempoResid = timestamp() - tempoResid;
-  fprintf(arqSaida, "# Tempo residuo:: %.15g", tempoResid);
+  fprintf(arqSaida, "# Tempo residuo:: %.15g \n", tempoResid);
 
   free(resid);
   free(residAnt);
@@ -543,7 +543,7 @@ int gradienteConjugado(SistLinear_t *SL, int maxIt, double tol, double matSaida[
     copiaVetor(x, xAnt, SL->n);
     calcX(x, xAnt, alpha, direc, SL->n);
     double normaMaxRel =calcNormaMaxRel(xAnt, x, SL->n); 
-    fprintf(arqSaida, "# iter %d: %.15g", it, normaMaxRel);
+    fprintf(arqSaida, "# iter %d: %.15g \n", it, normaMaxRel);
 
     // calcular novo residuo
     // r1= r0 - alpha0 * A *p0
@@ -569,14 +569,14 @@ int gradienteConjugado(SistLinear_t *SL, int maxIt, double tol, double matSaida[
     tMedioIter += timestamp() - tIterInicio;
   }
 
-  fprintf(arqSaida, "# residuo: || %.15g ||", calcErroNormaEuc(SL->b,SL->A, x, SL->n));
+  fprintf(arqSaida, "# residuo: || %.15g || \n", calcErroNormaEuc(SL->b,SL->A, x, SL->n));
   
   // tempo final
   fprintf(arqSaida, "# Tempo PC: %.15g \n", tempoPreCond);
   tMedioIter = tMedioIter / it;
   fprintf(arqSaida, "# Tempo tMedioIter:: %.15g \n", tMedioIter);
   tempoResid = timestamp() - tempoResid;
-  fprintf(arqSaida, "# Tempo residuo:: %.15g", tempoResid);
+  fprintf(arqSaida, "# Tempo residuo:: %.15g \n", tempoResid);
   free(resid);
   free(residAnt);
   free(direc);
