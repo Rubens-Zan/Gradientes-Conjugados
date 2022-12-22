@@ -20,7 +20,4 @@ CGSOLVER: $(OBJETOS)
 	$(CC) -o $(EXEC) $(OBJETOS) $(CFLAG)
 
 clean:
-	$(RM) $(OBJETOS)
-
-purge:
 	$(RM) $(OBJETOS) $(EXEC)

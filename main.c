@@ -26,10 +26,8 @@ int main(int argc, char **argv)
 
     // double *matPreConj = (double *) malloc(sizeof(double)* SL->n); 
     if (comando->usarPreCondicionador){
-        printf("PRE CONDICIONADO \n");
         gradienteConjugadoPreCondic(SL, comando->nIter,comando->erroMax,matSaida,arqSaida);
     } else {
-        printf("CONDICIONADO \n");
         gradienteConjugado(SL,comando->nIter,comando->erroMax,matSaida, arqSaida); 
     }
 
@@ -43,8 +41,8 @@ int main(int argc, char **argv)
     // x[0][0] = 2;
     // x[1][0] = 1;
 
-    prnSisLin(SL); 
-    printf("\n"); 
+    // prnSisLin(SL); 
+    // printf("\n"); 
 
 
 	fclose(arqSaida);

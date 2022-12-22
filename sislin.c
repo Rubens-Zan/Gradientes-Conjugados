@@ -360,8 +360,8 @@ double calcErroNormaEuc(double *b, double **A, double *x, int n){
   double *vAux = (double *)malloc(sizeof(double) * n);     // matriz de chute anterior
   double normaEucl = 0;
   multiplicaMatriz_Vetor(A,x,vAux, n);
-  subtraiVetor(b,vAux, vAux,n);
-  normaEucl = sqrt(multiplicaVetor_Vetor(vAux, vAux, n));
+  subtraiVetor(b,vAux, vAux,n); // vAux = b - A * x
+  normaEucl = sqrt(multiplicaVetor_Vetor(vAux, vAux, n)); // normaEucl = sqrt((b - A * x)^2)
 
   return normaEucl;
 }
