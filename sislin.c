@@ -387,6 +387,15 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, int maxIt, double tol, double 
   tempoResid = timestamp() - tempoResid;
   fprintf(arqSaida, "# Tempo residuo:: %.15g", tempoResid);
 
+  free(resid);
+  free(residAnt);
+  free(direc);
+  free(direcAnt);
+  free(xAnt);
+  free(x);
+  free(z);
+  free(zAnt);
+
   return it;
 }
 
@@ -401,17 +410,29 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, int maxIt, double tol, double 
  * @return int 
  */
 int gradienteConjugado(SistLinear_t *SL,int maxIt, double tol, double matSaida[][2], FILE *arqSaida){
-  double tMedioIter,tempoFinal;
+  double tMedioIter,tempoResid, tempoPreCond;
+  double alpha, beta;
+  double *resid = (double *)malloc(sizeof(double) * SL->n);    // matriz de residuo
+  double *residAnt = (double *)malloc(sizeof(double) * SL->n); // matriz de residuo anterior
+  double *direc = (double *)malloc(sizeof(double) * SL->n);    // matriz de direcao de busca
+  double *direcAnt = (double *)malloc(sizeof(double) * SL->n);     // matriz de direcao anterior
+  double *xAnt = (double *)malloc(sizeof(double) * SL->n);     // matriz de chute anterior
+  double *x = (double *)malloc(sizeof(double) * SL->n);
+  int it = 0;
   tMedioIter =0;
-  tempoFinal = timestamp();
 
+  tempoResid = timestamp();
   // transforma SL em ax=b em (A^T)Ax = A^t *b
   formataSLGradConj(SL); 
 
   // residuo = b
+  copiaVetor(SL->b,resid, SL->n); 
   // direcao = residuo
+  copiaVetor(resid, direc, SL->n); 
 
   // for
+  for (it=0;it < maxIt;++it){
+
   // escalarAlpha = (residuo * residuo^T) / (p^t * A * p )
   // calcula novo x 
   // calcular novo residuo
@@ -420,9 +441,23 @@ int gradienteConjugado(SistLinear_t *SL,int maxIt, double tol, double matSaida[]
 
   // escalarBeta = vetor residuo * vetor^t residuo / vetor residuo anterior * vetor^t residuo anterior 
   // calcula prox direc
+  }
 
 
   // tempo final
+  fprintf(arqSaida, "# Tempo PC: %.15g \n", tempoPreCond);
+  tMedioIter = tMedioIter / it; 
+  fprintf(arqSaida, "# Tempo tMedioIter:: %.15g \n", tMedioIter);
+  tempoResid = timestamp() - tempoResid;
+  fprintf(arqSaida, "# Tempo residuo:: %.15g", tempoResid);
+  free(resid);
+  free(residAnt);
+  free(direc);
+  free(direcAnt);
+  free(xAnt);
+  free(x);
+
+  return it; 
 }
 
 /***********************************************************************/
