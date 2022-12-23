@@ -18,7 +18,6 @@ double timestamp(void)
   return((double)(tp.tv_sec + tp.tv_nsec*1.0e-9));
 }
 
-
 /**
  * @brief Função para fazer o tratamento da entrada
  * @param argc 

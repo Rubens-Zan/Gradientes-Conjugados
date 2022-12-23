@@ -81,16 +81,16 @@ static inline double generateRandomB(unsigned int k)
   return (double)(k << 2) * (double)rand() * invRandMax;
 }
 
-/*!
-  \brief Cria coeficientes e termos independentes do SL
-  *
-  \param SL Ponteiro para o sistema linear
-  \param tipo Tipo de sistema linear a ser criado. Pode ser:
-     comSolucao, eqNula, eqProporcional, eqCombLinear, hilbert
-  \param coef_max Maior valor para coeficientes e termos independentes
-*/
+/**
+ * @brief - Inicia o sistema linear e aplica as propriedades para garantir a convergência
+ * 
+ * @param SL - Sistema linear a ser iniciado
+ * @param nDiagonais - Numero de diagonais
+ */
 void iniSisLin(SistLinear_t *SL, unsigned int nDiagonais)
 {
+  // Matriz é simétrica e positiva definida
+  
   for (int i = 0; i < SL->n; ++i)
   {
     for (int j = 0; j < SL->n; ++j)
