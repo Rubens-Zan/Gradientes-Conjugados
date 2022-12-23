@@ -1,28 +1,23 @@
 # Autor: Rubens Laszlo
 # Data: 12/2022
 # GRR 20206147 
-CC=gcc
-CFLAGS=-Wall -g
-SISLIN=-DSISLIN
-PROG=cgSolver
-OBJS=resolvedorGradConjug.o sislin.o utils.o $(PROG).o
 
-all: $(PROG)
 
-sislin: CFLAGS += $(SISLIN)
-sislin: all
+CC = gcc
+EXEC = cgSolver
+CFLAG = -Wall -std=c99 -lm
+MODULOS = sislin \
+	utils \
+	resolvedorGradConjug 
+ 
+OBJETOS = main.o $(addsuffix .o,$(MODULOS))
 
-resolvedorGradConjug.o: resolvedorGradConjug.c resolvedorGradConjug.h utils.h
-	$(CC) $(CFLAGS) -c resolvedorGradConjug.c -lm
+.PHONY: all clean
 
-sislin.o: sislin.c sislin.h resolvedorGradConjug.h utils.h
-	$(CC) $(CFLAGS) -c sislin.c -lm
+all: CGSOLVER
 
-utils.o: utils.c utils.h
-	$(CC) $(CFLAGS) -c utils.c -lm
-
-$(PROG): $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $^ -lm
+CGSOLVER: $(OBJETOS)
+	$(CC) -o $(EXEC) $(OBJETOS) $(CFLAG)
 
 clean:
-	rm -f *.o *.bak $(PROG)
+	$(RM) $(OBJETOS) $(EXEC)
