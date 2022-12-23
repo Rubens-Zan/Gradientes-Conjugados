@@ -6,7 +6,100 @@
 #include <string.h>
 #include <math.h>
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/***********************METODOS iguais nos dois tipos de resolução*****************************************/
+
+/**
+ * @brief Calcula o proximo x<k>
+ *
+ *  x[i][j]<k> = x[i][j]<k-1> + alpha <k> * p[i][j]<k-1>
+ *
+ * @param proxX
+ * @param xAnt - Valor do x<i-1> anterior
+ * @param alpha - valor do alpha<i-1> anterior
+ * @param p - valor da direção de busca p<i-1)> anterior
+ * @param n - dimensao do sistema linear
+ * @return double - Proximo x calculado
+ */
+void calcX(double *proxX, double *xAnt, double alpha, double *p, int n)
+{
+    for (int i = 0; i < n; ++i)
+    {
+        proxX[i] = xAnt[i] + (alpha * p[i]);
+    }
+}
+
+/**
+ * @brief - Calcula o residuo
+ *
+ * r<k> = r<k-1> - alpha<k-1> * A * p<k-1>
+ *
+ * @param residuoAnterior - residuo anterior
+ * @param alpha - Alpha calculado
+ * @param A - matriz A
+ * @param p - vetor de direção de busca
+ * @param residuo - vetor de residuo
+ * @param n - dimensao do sistema linear
+ */
+void calcResiduo(double *residuoAnterior, double alpha, double **A, double *p, double *residuo, int n)
+{
+    // alpha * A * p<k>
+    for (int i = 0; i < n; ++i)
+    {
+        double somaI = 0;
+        for (int j = 0; j < n; j++)
+        {
+            somaI += A[i][j] * p[j];
+        }
+
+        residuo[i] = residuo[i] - alpha * somaI;
+    }
+}
+
+/***********************METODOS pre condicionadores*****************************************/
+
+/**
+ * @brief Inicializa a matriz M com a diagonal principal invertida de A
+ * @param SL - Sistema Linear
+ * @param M - Matriz pre condicionadora a ser armazenada a 1/ diagonal 
+ */
+void inicializaPreCondJacobi(SistLinear_t *SL, double *M)
+{
+    for (int i = 0; i < SL->n; ++i)
+    {
+        M[i] = (double)1 / SL->A[i][i]; // gera vetor com diagonais do SL
+    }
+}
+
+/**
+ * @brief - Função para aplicar o pre condicionamento no sistema linear
+ * @param SL - O sistema linear que vai ser aplicado o pre condicionamento
+ * @param M - A matriz M^-1 a ser aplicada
+ */
+void aplicaPreCondicSL(SistLinear_t *SL, double *M)
+{
+    for (int i = 0; i < SL->n; i++)
+    {
+        for (int j = 0; j < SL->n; j++)
+        {
+            SL->A[i][j] *= M[i]; // aplica pre condicionador se for na diagonal
+            SL->b[i] *= M[i];
+        }
+    }
+}
+
+/**
+ * @brief Inicializa o chute inicial com 0
+ * @param x - vetor solução
+ * @param n - Tamanho do SL
+ */
+void inicializaSol(double *x, unsigned int n)
+{
+    for (int i = 0; i < n; ++i)
+        x[i] = 0;
+}
+
+/***********************METODOS AUXILIARES CG PRE CONDICIONADOR*****************************************/
+
 /**
  * @brief - Calcula proximo alpha
  *
@@ -34,7 +127,7 @@ double calcAlphaPreCond(double *resid, double **A, double *p, double *z, int n)
         {
             soma = soma + A[i][j] * z[j];
 
-            // Testa por valores inválidos
+            // Testa valores inválidos
             if (isnan(soma) || isinf(soma))
             {
                 fprintf(stderr, "Erro variavel invalida: soma(calcAlphaPreCond): %g é NaN ou +/-Infinito\n", soma);
@@ -49,7 +142,7 @@ double calcAlphaPreCond(double *resid, double **A, double *p, double *z, int n)
     for (int i = 0; i < n; ++i)
     {
         pTxAxP += z[i] * pTxA[i];
-        // Testa por valores inválidos
+        // Testa valores inválidos
         if (isnan(pTxAxP) || isinf(pTxAxP))
         {
             fprintf(stderr, "Erro variavel invalida: pTxAxP(calcAlphaPreCond): %g é NaN ou +/-Infinito\n", pTxAxP);
@@ -73,11 +166,12 @@ double calcAlphaPreCond(double *resid, double **A, double *p, double *z, int n)
  * @brief Calcula beta com base no residuo atual e no anterior
  *
  * beta<k> = (res<k+1>^T * z<k+1>)/(res<k>^T * z<k>)
- * @param resid
- * @param residAnt
- * @param z
- * @param zAnt
- * @param n
+ *
+ * @param resid - vetor de residuo
+ * @param residAnt - vetor de residuo anterior
+ * @param z - vetor z
+ * @param zAnt - vetor z anterior
+ * @param n - tamanho do SL
  * @return double
  */
 double calcBetaPreCond(double *resid, double *residAnt, double *z, double *zAnt, int n)
@@ -98,7 +192,9 @@ double calcBetaPreCond(double *resid, double *residAnt, double *z, double *zAnt,
 
 /**
  * @brief - Calcula o próximo Z
+ * 
  * z = M^-1 * residuo
+ * 
  * @param z - z a ser calculado
  * @param matPreConj
  * @param residuo
@@ -109,44 +205,10 @@ void calcZ(double *z, double *matPreConj, double *residuo, unsigned int n)
     for (int i = 0; i < n; ++i)
     {
         z[i] = matPreConj[i] * residuo[i];
-        // veriifcar nan
     }
 }
 
-//////////////////////////////////////
-
-/**
- * @brief Inicializa a matriz M com a diagonal principal invertida de A
- *
- * @param SL
- * @param M
- */
-void inicializaPreCondJacobi(SistLinear_t *SL, double *M)
-{
-    for (int i = 0; i < SL->n; ++i)
-    {
-        M[i] = (double)1 / SL->A[i][i]; // gera vetor com diagonais do SL
-    }
-}
-
-void aplicaPreCondicSL(SistLinear_t *SL, double *M)
-{
-    for (int i = 0; i < SL->n; i++)
-    {
-        for (int j = 0; j < SL->n; j++)
-        {
-            SL->A[i][j] *= M[i]; // aplica pre condicionador se for na diagonal
-            SL->b[i] *= M[i];
-        }
-    }
-}
-
-void inicializaSol(double *x, unsigned int n)
-{
-    for (int i = 0; i < n; ++i)
-        x[i] = 0;
-}
-/******************FUNCOES GRADIENTE CONJUGADO E PRE CONJUGADO**********************************/
+/******************FUNCOES GRADIENTE CONJUGADO com pre condicionador **********************************/
 
 /**
  * @brief Metodo resolvedor de sistemas lineares pelo metodo de gradiente conjugado com uso do pre condicionador de jacobi
@@ -167,7 +229,7 @@ void gradienteConjugadoPreCondic(SistLinear_t *SL, int maxIt, double tol, FILE *
     double *xAnt = (double *)malloc(sizeof(double) * SL->n);     // matriz de chute anterior
     double *z = (double *)malloc(sizeof(double) * SL->n);        // matriz de z
     double *zAnt = (double *)malloc(sizeof(double) * SL->n);     // matriz de z antigo
-    double *x = (double *)malloc(sizeof(double) * SL->n);        // matriz de soluções 
+    double *x = (double *)malloc(sizeof(double) * SL->n);        // matriz de soluções
 
     double *auxMatJacobi = (double *)malloc(sizeof(double) * SL->n);
 
@@ -191,8 +253,6 @@ void gradienteConjugadoPreCondic(SistLinear_t *SL, int maxIt, double tol, FILE *
     // direc = z
     copiaVetor(z, direc, SL->n);
 
-    // verifica erro do x com a tolerancia
-    // loop
     for (it = 0; it < maxIt; ++it)
     {
         double tIterInicio = timestamp();
@@ -217,7 +277,7 @@ void gradienteConjugadoPreCondic(SistLinear_t *SL, int maxIt, double tol, FILE *
             break;
         }
         // z0 = z
-        copiaVetor(z, zAnt, SL->n); //////// verificar com z0 = r
+        copiaVetor(z, zAnt, SL->n);
         // calcula z
         calcZ(z, auxMatJacobi, resid, SL->n);
         // beta = rt * z / rtant *zant
@@ -249,13 +309,13 @@ void gradienteConjugadoPreCondic(SistLinear_t *SL, int maxIt, double tol, FILE *
     free(zAnt);
 }
 
-////////////////FUNCOES AUXILIAR SEM PRE CONDICIONADOR///////////////////////////
+/******************FUNCOES AUXILIAR SEM PRE CONDICIONADOR**********************************/
 
 /**
  * @brief  Calcula o alpha
- * 
+ *
  * alpha = rT*r / direcT * A * direc
- * 
+ *
  * @param resid - vetor com residuo
  * @param direc - Direcao de busca atual
  * @param SL - Sistema linear
@@ -275,7 +335,7 @@ double calcAlpha(double *resid, double *direc, SistLinear_t *SL)
         {
             totalIDirecXa = totalIDirecXa + SL->A[i][j] * direc[j];
 
-            // Testa por valores inválidos
+            // Testa valores inválidos
             if (isnan(totalIDirecXa) || isinf(totalIDirecXa))
             {
                 fprintf(stderr, "Erro variavel invalida: totalIDirecXa(calcAlpha): %g é NaN ou +/-Infinito\n", totalIDirecXa);
@@ -288,71 +348,28 @@ double calcAlpha(double *resid, double *direc, SistLinear_t *SL)
     for (int i = 0; i < SL->n; ++i)
     {
         direcTxAxDirec += direc[i] * vetDirecxA[i];
-        // Testa por valores inválidos
-        if (isnan(direcTxAxDirec) || isinf(direcTxAxDirec))
-        {
-            fprintf(stderr, "Erro variavel invalida: direcTxAxDirec(calcAlpha): %g é NaN ou +/-Infinito\n", direcTxAxDirec);
-            exit(1);
-        }
     }
 
     alpha = residTxresid / direcTxAxDirec;
+    // Testa valores inválidos
 
+    if (isnan(direcTxAxDirec) || isinf(direcTxAxDirec))
+    {
+        fprintf(stderr, "Erro variavel invalida: direcTxAxDirec(calcAlpha): %g é NaN ou +/-Infinito\n", direcTxAxDirec);
+        exit(1);
+    }
     free(vetDirecxA);
     return alpha;
 }
 
 /**
- * @brief Calcula o proximo x<k>
- *
- *  x[i][j]<k> = x[i][j]<k-1> + alpha <k> * p[i][j]<k-1>
- *
- * @param proxX
- * @param xAnt - Valor do x<i-1> anterior
- * @param alpha - valor do alpha<i-1> anterior
- * @param p - valor da direção de busca p<i-1)> anterior
- * @param n - dimensao do sistema linear
- * @return double - Proximo x calculado
- */
-void calcX(double *proxX, double *xAnt, double alpha, double *p, int n)
-{
-    for (int i = 0; i < n; ++i)
-    {
-        proxX[i] = xAnt[i] + (alpha * p[i]);
-    }
-}
-
-/**
- * @brief - Calcula o residuo   TODOOOOOOOOOOOOOOOO
- * r<k> = r<k-1> - alpha<k-1> * A * p<k-1> ok
- * @param residuoAnterior
- * @param alpha
- * @param A
- * @param p
- * @param residuo
- * @param n - dimensao do sistema linear
- */
-void calcResiduo(double *residuoAnterior, double alpha, double **A, double *p, double *residuo, int n)
-{
-    // alpha * A * p<k>
-    for (int i = 0; i < n; ++i)
-    {
-        double somaI = 0;
-        for (int j = 0; j < n; j++)
-        {
-            somaI += A[i][j] * p[j];
-        }
-
-        residuo[i] = residuo[i] - alpha * somaI;
-    }
-}
-
-/**
- * @brief
+ * @brief - Calcula o valor de beta
+ * 
  * beta = r^T * r / rAnt^T * rAnt
- * @param resid
- * @param residAnt
- * @param n
+ * 
+ * @param resid - vetor de residuo
+ * @param residAnt - vetor de residuo anterior
+ * @param n - Tamanho do SL
  * @return double
  */
 double calcBeta(double *resid, double *residAnt, unsigned int n)
@@ -380,7 +397,8 @@ void calcProxDirecBusca(double *proxDir, double *z, double beta, double *direcAn
     }
 }
 
-///////////////////////////////////////////////////////////
+/******************FUNCAO GRADIENTE CONJUGADO SEM PRE CONDICIONADOR **********************************/
+
 /**
  * @brief Metodo resolvedor de sistemas lineares pelo metodo de gradiente conjugado
  *
@@ -405,7 +423,7 @@ void gradienteConjugado(SistLinear_t *SL, int maxIt, double tol, FILE *arqSaida)
     tMedioIter = 0;
 
     tempoResid = timestamp();
-    // nao usa pre condicionadores 
+    // nao usa pre condicionadores
     tempoPreCond = timestamp() - tempoResid;
 
     inicializaSol(x, SL->n);
@@ -419,7 +437,7 @@ void gradienteConjugado(SistLinear_t *SL, int maxIt, double tol, FILE *arqSaida)
         double tIterInicio = timestamp();
 
         // calcula alpha
-        alpha = calcAlpha(resid,direc,SL);
+        alpha = calcAlpha(resid, direc, SL);
         // calcula novo x
         // x1 = x0 +alpha * p
         copiaVetor(x, xAnt, SL->n);

@@ -97,11 +97,10 @@ void iniSisLin(SistLinear_t *SL, unsigned int nDiagonais)
     {
       if (i == j)
         SL->A[i][j] = generateRandomA(i, j, nDiagonais);
-      else if (i > j)
+      else if (i < j)
       {
-
-        int resp = j + (nDiagonais / 2);
-        if (resp >= i)
+        int aux = j - (nDiagonais / 2);
+        if (aux <= i)
         {
           SL->A[i][j] = generateRandomA(i, j, nDiagonais);
         }
@@ -110,9 +109,8 @@ void iniSisLin(SistLinear_t *SL, unsigned int nDiagonais)
       }
       else
       {
-
-        int resp = j - (nDiagonais / 2);
-        if (resp <= i)
+        int aux = j + (nDiagonais / 2);
+        if (aux >= i)
         {
           SL->A[i][j] = generateRandomA(i, j, nDiagonais);
         }
@@ -120,7 +118,7 @@ void iniSisLin(SistLinear_t *SL, unsigned int nDiagonais)
           SL->A[i][j] = 0.0;
       }
     }
-    
+
     SL->b[i] = generateRandomB(nDiagonais);
   }
 }
@@ -153,7 +151,7 @@ void prnVetor(double *v, unsigned int n)
 
 /**
  * @brief - Printa o vetor V no arquivo arqSaida
- * 
+ *
  * @param v - vetor
  * @param n - tamanho do vetor
  * @param arqSaida - arquivo de saida
@@ -194,7 +192,7 @@ double multiplicaVetores(double *vetA, double *vetB, unsigned int n)
   for (int i = 0; i < n; ++i)
   {
     produto = produto + vetA[i] * vetB[i];
-    // Testa por valores inválidos.
+    // Testa valores inválidos.
     if (isnan(produto) || isinf(produto))
     {
       fprintf(stderr, "Erro variavel invalida: produto(multiplicaVetores): %g é NaN ou +/-Infinito\n", produto);
