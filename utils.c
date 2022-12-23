@@ -24,7 +24,6 @@ void tratamentoEntrada(int argc, char **argv, tComando *comando){
     comando->erroMax = 0; // se o erro for 0, vai ser desconsiderado
     comando->nIter = 0;
     comando->dimensao = 0;
-    comando->dimensao = 0;
     
     for (int i=0;i<argc;++i){
         if (strcmp ( argv[i], "-n") == 0 && (i+1 < argc)){
@@ -80,3 +79,35 @@ void inicializarMatriz(double **vet, int lin,int col){
         }
 
 }
+
+
+/******************NORMAS**********************************/
+/**
+ * @brief 
+ *  r = b - Ax
+ * @param b 
+ * @param A 
+ * @param x 
+ * @return double 
+ */
+double calcErroNormaEuc(double *b, double **A, double *x, int n){
+  double *vAux = (double *)malloc(sizeof(double) * n);     // matriz de chute anterior
+  double normaEucl = 0;
+  multiplicaMatriz_Vetor(A,x,vAux, n);
+  subtraiVetor(b,vAux, vAux,n); // vAux = b - A * x
+  normaEucl = sqrt(multiplicaVetor_Vetor(vAux, vAux, n)); // normaEucl = sqrt((b - A * x)^2)
+
+  return normaEucl;
+}
+
+double calcNormaMaxRel(double *xAnt,double *x, int n){
+  double normaMaxRel = 0; 
+  for (int i=0;i < n;++i){
+    if ( (x[i] - xAnt[i]/ x[i]) > normaMaxRel){
+      normaMaxRel =  ABS(x[i] - xAnt[i])/ABS(x[i]); 
+    }
+  }
+
+  return normaMaxRel; 
+}
+

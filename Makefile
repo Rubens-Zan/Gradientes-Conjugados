@@ -5,12 +5,12 @@
 
 CC = gcc
 EXEC = cgSolver
-CFLAG = -Wall -std=c99 -lm
-MODULOS = opmatrizes \
+CFLAG = -Wall -g -std=c99 -lm
+MODULOS = resolverGradConj \
 	sislin \
 	utils 
  
-OBJETOS = main.o $(addsuffix .o,$(MODULOS))
+OBJETOS = main.o $(addsuffix .o,$(MODULOS) $(CFLAG))
 
 .PHONY: all clean
 

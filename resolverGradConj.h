@@ -1,0 +1,13 @@
+void formataSLGradConj(SistLinear_t *SL);
+void calcZ(real_t *z, real_t *inverse_c, real_t *residuo, unsigned int size);
+void inicializaPreCondJacobi(SistLinear_t *SL, real_t *M);
+void aplicaPreCondicSL(SistLinear_t *SL, real_t *M);
+void calcX(double *proxX, double *xAnt, double alpha, double *p, int n);
+void calcResiduo(double *residuoAnterior, double alpha, double **A, double *p, double *residuo, int n);
+void calcProxDirecBusca(double *proxDir, double *z, double beta, double *direcAnterior, int n);
+double calcAlphaPreCond(double *resid, double **A, double *p, double *z, int n);
+double calcBetaPreCond(double *resid, double *residAnt, double *z, double *zAnt, int n);
+double calcAlpha(double *resid, double *direc, SistLinear_t *SL);
+double calcBeta(double *resid, double *residAnt, unsigned int n);
+int gradienteConjugado(SistLinear_t *SL, int maxIt, double tol, double matSaida[][2], FILE *arqSaida);
+int gradienteConjugadoPreCondic(SistLinear_t *SL, int maxIt, double tol, double matSaida[][2], FILE *arqSaida);
