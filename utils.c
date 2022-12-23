@@ -101,11 +101,11 @@ double calcularNormaL2Residuo( double *residuo, unsigned int n)
         soma = soma + residuo[i]*residuo[i];
 
         // Teste para ver se não foi gerado um NaN ou um número infinito
-        // if (isnan(soma) || isinf(soma))
-        // {
-        //     fprintf(stderr, "Erro soma(calcularNormaL2Residuo): %g é NaN ou +/-Infinito\n", soma);
-        //     exit(1);
-        // }
+        if (isnan(soma) || isinf(soma))
+        {
+            fprintf(stderr, "Erro soma(calcularNormaL2Residuo): %g é NaN ou +/-Infinito\n", soma);
+            exit(1);
+        }
 
     }
     raiz = sqrt(soma);
@@ -128,11 +128,11 @@ double normaMaxErroRelativo(double *x, double *xAnt, unsigned int n)
         {
             maior = ABS(x[i] - xAnt[i]) / ABS(x[i]);      
             // Teste para ver se não foi gerado um NaN ou um número infinito    
-            // if (isnan(maior) || isinf(maior))
-            // {
-            //     fprintf(stderr, "Erro maior(normaMaxErroRelativo): %g é NaN ou +/-Infinito\n", maior);
-            //     exit(1);
-            // }
+            if (isnan(maior) || isinf(maior))
+            {
+                fprintf(stderr, "Erro maior(normaMaxErroRelativo): %g é NaN ou +/-Infinito\n", maior);
+                exit(1);
+            }
         }
     }
 
