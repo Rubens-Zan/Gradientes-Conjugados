@@ -18,8 +18,8 @@ SistLinear_t *alocaSisLin(unsigned int n)
   {
 
     SL->n = n;
-    SL->A = (real_t **)malloc(n * sizeof(real_t *));
-    SL->b = (real_t *)malloc(n * sizeof(real_t));
+    SL->A = (double **)malloc(n * sizeof(double *));
+    SL->b = (double *)malloc(n * sizeof(double));
 
     if (!(SL->A) || !(SL->b))
     {
@@ -28,7 +28,7 @@ SistLinear_t *alocaSisLin(unsigned int n)
     }
 
     // Matriz como vetor de N ponteiros para um único vetor com N*N elementos
-    SL->A[0] = (real_t *)malloc(n * n * sizeof(real_t));
+    SL->A[0] = (double *)malloc(n * n * sizeof(double));
     if (!(SL->A[0]))
     {
       liberaSisLin(SL);
@@ -141,7 +141,7 @@ void prnSisLin(SistLinear_t *SL)
   printf("\n\n");
 }
 
-void prnVetor(real_t *v, unsigned int n)
+void prnVetor(double *v, unsigned int n)
 {
   int i;
 
@@ -151,7 +151,7 @@ void prnVetor(real_t *v, unsigned int n)
   printf("\n\n");
 }
 
-void prnVetorArq(real_t *v, unsigned int n, FILE *arqSaida)
+void prnVetorArq(double *v, unsigned int n, FILE *arqSaida)
 {
   int i;
   fprintf(arqSaida, "\n");

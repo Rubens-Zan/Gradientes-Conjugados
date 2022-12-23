@@ -105,10 +105,10 @@ double calcErroNormaEuc(double *b, double **A, double *x, int n){
   return normaEucl;
 }
 
-real_t normaMaxErroRelativo(real_t *x, real_t *xAnt, unsigned int n)
+double normaMaxErroRelativo(double *x, double *xAnt, unsigned int n)
 {
 
-    real_t maior = ABS(x[0] - xAnt[0]) / ABS(x[0]);
+    double maior = ABS(x[0] - xAnt[0]) / ABS(x[0]);
 
     //Percorre o vetor de soluções,
     for (int i = 1; i < n; ++i)

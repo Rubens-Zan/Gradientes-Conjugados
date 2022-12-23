@@ -79,7 +79,7 @@ double calcAlphaPreCond(double *resid, double **A, double *p, double *z, int n)
     //Percorre a matriz SL->A e o vetor D
     for (int i = 0; i < n; ++i)
     {
-        real_t soma = 0.0;
+        double soma = 0.0;
         for (int j = 0; j < n; ++j)
         {
             //calcula o iésimo elemento do vetor_resultante (esse vetor é chamado de 'z' no livro M.Cristina C. Cunha)
@@ -97,7 +97,7 @@ double calcAlphaPreCond(double *resid, double **A, double *p, double *z, int n)
     }
 
     // pT * A * p
-    real_t pTxAxP = 0.0;
+    double pTxAxP = 0.0;
     for (int i = 0; i < n; ++i)
     {
         pTxAxP += z[i] * pTxA[i];
@@ -155,7 +155,7 @@ double calcBetaPreCond(double *resid, double *residAnt, double *z, double *zAnt,
  * @param residuo
  * @param size
  */
-void calcZ(real_t *z, real_t *inverse_c, real_t *residuo, unsigned int size)
+void calcZ(double *z, double *inverse_c, double *residuo, unsigned int size)
 {
     for (int i = 0; i < size; ++i)
     {
@@ -172,15 +172,15 @@ void calcZ(real_t *z, real_t *inverse_c, real_t *residuo, unsigned int size)
  * @param SL
  * @param M
  */
-void inicializaPreCondJacobi(SistLinear_t *SL, real_t *M)
+void inicializaPreCondJacobi(SistLinear_t *SL, double *M)
 {
     for (int i = 0; i < SL->n; ++i)
     {
-        M[i] = (real_t)1 / SL->A[i][i]; // gera vetor com diagonais do SL
+        M[i] = (double)1 / SL->A[i][i]; // gera vetor com diagonais do SL
     }
 }
 
-void aplicaPreCondicSL(SistLinear_t *SL, real_t *M)
+void aplicaPreCondicSL(SistLinear_t *SL, double *M)
 {
     for (int i = 0; i < SL->n; i++)
     {
@@ -314,13 +314,13 @@ double calcAlpha(double *resid, double *direc, SistLinear_t *SL)
 {
     double residTxresid = multiplicaVetores(resid, resid, SL->n);
     double alpha = 0;
-    real_t *vetDirecxA = (double *)malloc(sizeof(double) * SL->n);
-    real_t direcTxAxDirec = 0.0;
+    double *vetDirecxA = (double *)malloc(sizeof(double) * SL->n);
+    double direcTxAxDirec = 0.0;
 
     // Percorre a matriz SL->A e o vetor de direcoes
     for (int i = 0; i < SL->n; ++i)
     {
-        real_t soma = 0.0;
+        double soma = 0.0;
         for (int j = 0; j < SL->n; ++j)
         {
             // calcula o iésimo elemento do vetDirecxA (esse vetor é chamado de 'z' no livro M.Cristina C. Cunha)

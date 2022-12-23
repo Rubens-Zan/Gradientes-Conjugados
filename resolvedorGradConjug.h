@@ -1,7 +1,7 @@
 void formataSLGradConj(SistLinear_t *SL);
-void calcZ(real_t *z, real_t *inverse_c, real_t *residuo, unsigned int size);
-void inicializaPreCondJacobi(SistLinear_t *SL, real_t *M);
-void aplicaPreCondicSL(SistLinear_t *SL, real_t *M);
+void calcZ(double *z, double *inverse_c, double *residuo, unsigned int size);
+void inicializaPreCondJacobi(SistLinear_t *SL, double *M);
+void aplicaPreCondicSL(SistLinear_t *SL, double *M);
 void calcX(double *proxX, double *xAnt, double alpha, double *p, int n);
 void calcResiduo(double *residuoAnterior, double alpha, double **A, double *p, double *residuo, int n);
 void calcProxDirecBusca(double *proxDir, double *z, double beta, double *direcAnterior, int n);
