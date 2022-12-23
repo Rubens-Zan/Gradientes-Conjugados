@@ -53,12 +53,11 @@ void tratamentoEntrada(int argc, char **argv, tComando *comando){
     }
 
     if (!comando->dimensao || !comando->nDiagonais || !comando->nIter){
-        fprintf (stderr, "ERRO argumento invalido\n");
+        fprintf (stderr, "Erro: argumento invalido\n");
 		exit(1);
     }
 
 }
-
 
 double ** alocarMatriz(int lin,int col){
     double **matriz;
@@ -70,7 +69,6 @@ double ** alocarMatriz(int lin,int col){
 
     return matriz; 
 }
-
 
 void liberarMatriz(double **matriz){
     free(matriz[0]);
@@ -88,7 +86,14 @@ void inicializarMatriz(double **vet, int lin,int col){
 
 /******************NORMAS**********************************/
 
-double calcularNormaL2Residuo( double *residuo, unsigned int n)
+/**
+ * @brief Calcula a norma do residuo
+ * normaL2Residuo = sqrt(residuo^2)
+ * @param residuo - vetor de residuo
+ * @param n - tamanho do vetor
+ * @return double 
+ */
+double normaL2Residuo( double *residuo, unsigned int n)
 {
 
     double soma = 0.0;
@@ -100,10 +105,10 @@ double calcularNormaL2Residuo( double *residuo, unsigned int n)
         // Soma o quadrado dos elementos das soluções
         soma = soma + residuo[i]*residuo[i];
 
-        // Teste para ver se não foi gerado um NaN ou um número infinito
+        // Testa por valores inválidos
         if (isnan(soma) || isinf(soma))
         {
-            fprintf(stderr, "Erro soma(calcularNormaL2Residuo): %g é NaN ou +/-Infinito\n", soma);
+            fprintf(stderr, "Erro variavel invalida: soma(normaL2Residuo): %g é NaN ou +/-Infinito\n", soma);
             exit(1);
         }
 
@@ -115,40 +120,34 @@ double calcularNormaL2Residuo( double *residuo, unsigned int n)
 
 }
 
-double normaMaxErroRelativo(double *x, double *xAnt, unsigned int n)
+/**
+ * @brief - Calcula a norma max da solução relativa
+ * max (|(x - xAnt)| / |x|)
+ * @param x - Vetor com a solução atual
+ * @param xAnt - Vetor com a solução antiga
+ * @param n - tamanho do vetor
+ * @return double 
+ */
+double normaMaxRelat(double *x, double *xAnt, unsigned int n)
 {
 
-    double maior = ABS(x[0] - xAnt[0]) / ABS(x[0]);
+    double maiorErro = ABS(x[0] - xAnt[0]) / ABS(x[0]);
 
-    //Percorre o vetor de soluções,
     for (int i = 1; i < n; ++i)
     {
-        // acha o maior erro relativo e
-        if (ABS(x[i] - xAnt[i]) / ABS(x[i]) > maior)
+        if (ABS(x[i] - xAnt[i]) / ABS(x[i]) > maiorErro)
         {
-            maior = ABS(x[i] - xAnt[i]) / ABS(x[i]);      
-            // Teste para ver se não foi gerado um NaN ou um número infinito    
-            if (isnan(maior) || isinf(maior))
+            maiorErro = ABS(x[i] - xAnt[i]) / ABS(x[i]);      
+            // Testa por valores inválidos    
+            if (isnan(maiorErro) || isinf(maiorErro))
             {
-                fprintf(stderr, "Erro maior(normaMaxErroRelativo): %g é NaN ou +/-Infinito\n", maior);
+                fprintf(stderr, "Erro variavel invalida: maiorErro(normaMaxRelat): %g é NaN ou +/-Infinito\n", maiorErro);
                 exit(1);
             }
         }
     }
 
-    // Retorna ao final o maior erro absoluto.
-    return maior;
+    // Retorna ao final o maiorErro erro absoluto.
+    return maiorErro;
 }
-
-double calcNormaMaxRel(double *xAnt,double *x, int n){
-  double normaMaxRel = 0; 
-  for (int i=0;i < n;++i){
-    if ( (x[i] - xAnt[i]/ x[i]) > normaMaxRel){
-      normaMaxRel =  ABS(x[i] - xAnt[i])/ABS(x[i]); 
-    }
-  }
-
-  return normaMaxRel; 
-}
-
 

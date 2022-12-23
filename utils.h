@@ -6,10 +6,8 @@ typedef struct tComando {
     bool usarPreCondicionador;   
     char saida[100];
 } tComando;
-double calcNormaMaxRel(double *xAnt,double *x, int n);
-double normaMaxErroRelativo(double *x, double *xAnt, unsigned int n);
-
-double calcularNormaL2Residuo( double *residuo, unsigned int n);
+double normaMaxRelat(double *x, double *xAnt, unsigned int n);
+double normaL2Residuo( double *residuo, unsigned int n);
 
 double timestamp(void);
 void tratamentoEntrada(int argc, char **argv, tComando *comando);

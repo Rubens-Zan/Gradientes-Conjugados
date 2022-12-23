@@ -6,13 +6,12 @@
 #include <string.h>
 #include <math.h>
 
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
- * @brief - Calcula alpha parece ok 
+ * @brief - Calcula proximo alpha
  *
  * alpha = r<k>^t * z<k> / (p<k>^t * A * p<k>)
- * 
+ *
  * @param resid - residuo calculado
  * @param A - Matriz original
  * @param p - Matriz de direção de busca calculada
@@ -27,23 +26,21 @@ double calcAlphaPreCond(double *resid, double **A, double *p, double *z, int n)
 
     double residTxZ = multiplicaVetores(z, resid, n);
 
-    //Percorre a matriz SL->A e o vetor D
+    // Percorre a matriz SL->A e o vetor D
     for (int i = 0; i < n; ++i)
     {
         double soma = 0.0;
         for (int j = 0; j < n; ++j)
         {
-            //calcula o iésimo elemento do vetor_resultante (esse vetor é chamado de 'z' no livro M.Cristina C. Cunha)
             soma = soma + A[i][j] * z[j];
 
-            // Teste para ver se não foi gerado um NaN ou um número infinito
+            // Testa por valores inválidos
             if (isnan(soma) || isinf(soma))
             {
-                fprintf(stderr, "Erro soma(calcAlphaPreCond): %g é NaN ou +/-Infinito\n", soma);
+                fprintf(stderr, "Erro variavel invalida: soma(calcAlphaPreCond): %g é NaN ou +/-Infinito\n", soma);
                 exit(1);
             }
         }
-        // O iésimo elemento do vetor resultante recebe soma.
         pTxA[i] = soma;
     }
 
@@ -52,9 +49,10 @@ double calcAlphaPreCond(double *resid, double **A, double *p, double *z, int n)
     for (int i = 0; i < n; ++i)
     {
         pTxAxP += z[i] * pTxA[i];
-        // Teste para ver se não foi gerado um NaN ou um número infinito
-        if (isnan(pTxAxP) || isinf(pTxAxP)){
-            fprintf(stderr, "Erro pTxAxP(calcularDenominadorEscalarA): %g é NaN ou +/-Infinito\n", pTxAxP);
+        // Testa por valores inválidos
+        if (isnan(pTxAxP) || isinf(pTxAxP))
+        {
+            fprintf(stderr, "Erro variavel invalida: pTxAxP(calcAlphaPreCond): %g é NaN ou +/-Infinito\n", pTxAxP);
             exit(1);
         }
     }
@@ -63,7 +61,7 @@ double calcAlphaPreCond(double *resid, double **A, double *p, double *z, int n)
     // Verificação se resultou em NaN ou +/- infinito
     if (isnan(alpha) || isinf(alpha))
     {
-        fprintf(stderr, "Erro alpha(calcAlphaPreCond): %g é NaN ou +/-Infinito\n", alpha);
+        fprintf(stderr, "Erro variavel invalida: alpha(calcAlphaPreCond): %g é NaN ou +/-Infinito\n", alpha);
         exit(1);
     }
     free(pTxA);
@@ -85,32 +83,32 @@ double calcAlphaPreCond(double *resid, double **A, double *p, double *z, int n)
 double calcBetaPreCond(double *resid, double *residAnt, double *z, double *zAnt, int n)
 {
     double beta = 0;
-    double residTxZ = multiplicaVetores(z,resid,n);
-    double zAntxResidAnt = multiplicaVetores(zAnt, residAnt, n);  
+    double residTxZ = multiplicaVetores(z, resid, n);
+    double zAntxResidAnt = multiplicaVetores(zAnt, residAnt, n);
 
     beta = residTxZ / zAntxResidAnt;
     // Verificação se resultou em NaN ou +/- infinito
     if (isnan(beta) || isinf(beta))
     {
-        fprintf(stderr, "Erro beta(calcbetaPreCond): %g é NaN ou +/-Infinito\n", beta);
+        fprintf(stderr, "Erro variavel invalida: beta(calcbetaPreCond): %g é NaN ou +/-Infinito\n", beta);
         exit(1);
     }
     return beta;
 }
 
 /**
- * @brief
- *
- * @param z
- * @param inverse_c
+ * @brief - Calcula o próximo Z
+ * z = M^-1 * residuo
+ * @param z - z a ser calculado
+ * @param matPreConj
  * @param residuo
- * @param size
+ * @param n - Tamanho do vetor
  */
-void calcZ(double *z, double *inverse_c, double *residuo, unsigned int size)
+void calcZ(double *z, double *matPreConj, double *residuo, unsigned int n)
 {
-    for (int i = 0; i < size; ++i)
+    for (int i = 0; i < n; ++i)
     {
-        z[i] = inverse_c[i] * residuo[i];
+        z[i] = matPreConj[i] * residuo[i];
         // veriifcar nan
     }
 }
@@ -143,34 +141,33 @@ void aplicaPreCondicSL(SistLinear_t *SL, double *M)
     }
 }
 
-void inicializaSol(double *x, unsigned int n){
-    for (int i=0;i < n;++i)
-        x[i]=0;
+void inicializaSol(double *x, unsigned int n)
+{
+    for (int i = 0; i < n; ++i)
+        x[i] = 0;
 }
 /******************FUNCOES GRADIENTE CONJUGADO E PRE CONJUGADO**********************************/
 
 /**
  * @brief Metodo resolvedor de sistemas lineares pelo metodo de gradiente conjugado com uso do pre condicionador de jacobi
  *
- * @param SL
- * @param maxIt
- * @param tol
- * @param matSaida
- * @param arqSaida
- * @return int
+ * @param SL - Sistema Linear
+ * @param maxIt - numero maximo de iterações
+ * @param tol - Tolerancia maxima
+ * @param matSaida -
+ * @param arqSaida - Arquivo para printar as informações
  */
-int gradienteConjugadoPreCondic(SistLinear_t *SL, int maxIt, double tol, double matSaida[][2], FILE *arqSaida)
+void gradienteConjugadoPreCondic(SistLinear_t *SL, int maxIt, double tol, FILE *arqSaida)
 {
-    // inicia chute inicial com vetor de 0
     double alpha, beta;
     double *resid = (double *)malloc(sizeof(double) * SL->n);    // matriz de residuo
     double *residAnt = (double *)malloc(sizeof(double) * SL->n); // matriz de residuo anterior
     double *direc = (double *)malloc(sizeof(double) * SL->n);    // matriz de direcao de busca
     double *direcAnt = (double *)malloc(sizeof(double) * SL->n); // matriz de direcao anterior
     double *xAnt = (double *)malloc(sizeof(double) * SL->n);     // matriz de chute anterior
-    double *z = (double *)malloc(sizeof(double) * SL->n);        // matriz de
-    double *zAnt = (double *)malloc(sizeof(double) * SL->n);     // matriz de
-    double *x = (double *)malloc(sizeof(double) * SL->n);
+    double *z = (double *)malloc(sizeof(double) * SL->n);        // matriz de z
+    double *zAnt = (double *)malloc(sizeof(double) * SL->n);     // matriz de z antigo
+    double *x = (double *)malloc(sizeof(double) * SL->n);        // matriz de soluções 
 
     double *auxMatJacobi = (double *)malloc(sizeof(double) * SL->n);
 
@@ -181,12 +178,12 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, int maxIt, double tol, double 
     int it;
 
     inicializaPreCondJacobi(SL, auxMatJacobi);
- 
+
     // (M^-1) * A
     // (M^-1) * b
     aplicaPreCondicSL(SL, auxMatJacobi);
     tempoPreCond = timestamp() - tempoResid;
-    inicializaSol(x,SL->n);
+    inicializaSol(x, SL->n);
     // residuo = b
     copiaVetor(SL->b, resid, SL->n); // como x inicial igual a 0, desconsidero o r = b - (A * x)
     // calcula z
@@ -206,7 +203,7 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, int maxIt, double tol, double 
         copiaVetor(x, xAnt, SL->n); // xant = x
         calcX(x, xAnt, alpha, direc, SL->n);
 
-        double normaMaxRel = normaMaxErroRelativo(x,xAnt, SL->n);
+        double normaMaxRel = normaMaxRelat(x, xAnt, SL->n);
         fprintf(arqSaida, "# iter %d: %.15g\n", it, normaMaxRel);
         // calcula novo residuo
         copiaVetor(resid, residAnt, SL->n);
@@ -233,7 +230,7 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, int maxIt, double tol, double 
     }
 
     // A norma euclidiana do resíduo (||r||), onde r = b - Ax
-    fprintf(arqSaida, "# residuo: || %.15g || \n", calcularNormaL2Residuo(resid, SL->n));
+    fprintf(arqSaida, "# residuo: || %.15g || \n", normaL2Residuo(resid, SL->n));
 
     fprintf(arqSaida, "# Tempo PC: %.15g \n", tempoPreCond);
     tMedioIter = tMedioIter / it;
@@ -249,18 +246,18 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, int maxIt, double tol, double 
     free(x);
     free(z);
     free(zAnt);
-
-    return it;
 }
 
 ////////////////FUNCOES AUXILIAR SEM PRE CONDICIONADOR///////////////////////////
 
 /**
- * @brief  OK
+ * @brief  Calcula o alpha
+ * 
  * alpha = rT*r / direcT * A * direc
- * @param resid
- * @param direc
- * @param SL
+ * 
+ * @param resid - vetor com residuo
+ * @param direc - Direcao de busca atual
+ * @param SL - Sistema linear
  * @return double
  */
 double calcAlpha(double *resid, double *direc, SistLinear_t *SL)
@@ -270,35 +267,30 @@ double calcAlpha(double *resid, double *direc, SistLinear_t *SL)
     double *vetDirecxA = (double *)malloc(sizeof(double) * SL->n);
     double direcTxAxDirec = 0.0;
 
-    // Percorre a matriz SL->A e o vetor de direcoes
     for (int i = 0; i < SL->n; ++i)
     {
-        double soma = 0.0;
+        double totalIDirecXa = 0.0;
         for (int j = 0; j < SL->n; ++j)
         {
-            // calcula o iésimo elemento do vetDirecxA (esse vetor é chamado de 'z' no livro M.Cristina C. Cunha)
-            soma = soma + SL->A[i][j] * direc[j];
+            totalIDirecXa = totalIDirecXa + SL->A[i][j] * direc[j];
 
-            // Teste para ver se não foi gerado um NaN ou um número infinito
-            if (isnan(soma) || isinf(soma))
+            // Testa por valores inválidos
+            if (isnan(totalIDirecXa) || isinf(totalIDirecXa))
             {
-                fprintf(stderr, "Erro soma(calcAlpha): %g é NaN ou +/-Infinito\n", soma);
+                fprintf(stderr, "Erro variavel invalida: totalIDirecXa(calcAlpha): %g é NaN ou +/-Infinito\n", totalIDirecXa);
                 exit(1);
             }
         }
-        // O iésimo elemento do vetor resultante recebe soma.
-        vetDirecxA[i] = soma;
+        vetDirecxA[i] = totalIDirecXa;
     }
 
-    // Tendo o vetor resultante, agora é só multiplicar D^t * vetor_resultante.
-    // O cálculo entre um vetor transposto e um vetor normal gera uma matriz de 1x1, ou seja, um número real.
     for (int i = 0; i < SL->n; ++i)
     {
         direcTxAxDirec += direc[i] * vetDirecxA[i];
-        // Teste para ver se não foi gerado um NaN ou um número infinito
+        // Testa por valores inválidos
         if (isnan(direcTxAxDirec) || isinf(direcTxAxDirec))
         {
-            fprintf(stderr, "Erro direcTxAxDirec(calcularDenominadorEscalarA): %g é NaN ou +/-Infinito\n", direcTxAxDirec);
+            fprintf(stderr, "Erro variavel invalida: direcTxAxDirec(calcAlpha): %g é NaN ou +/-Infinito\n", direcTxAxDirec);
             exit(1);
         }
     }
@@ -389,16 +381,15 @@ void calcProxDirecBusca(double *proxDir, double *z, double beta, double *direcAn
 
 ///////////////////////////////////////////////////////////
 /**
- * @brief Metodo resolvedor de sistemas lineares pelo metodo de gradiente conjugado parece ok
+ * @brief Metodo resolvedor de sistemas lineares pelo metodo de gradiente conjugado
  *
- * @param SL
- * @param maxIt
- * @param tol
- * @param matSaida
- * @param arqSaida
- * @return int
+ * @param SL - Sistema Linear
+ * @param maxIt - numero maximo de iterações
+ * @param tol - Tolerancia maxima
+ * @param matSaida -
+ * @param arqSaida - Arquivo para printar as informações
  */
-int gradienteConjugado(SistLinear_t *SL, int maxIt, double tol, double matSaida[][2], FILE *arqSaida)
+void gradienteConjugado(SistLinear_t *SL, int maxIt, double tol, FILE *arqSaida)
 {
     printf("AQUIIIII ");
     double tMedioIter, tempoResid, tempoPreCond;
@@ -416,8 +407,8 @@ int gradienteConjugado(SistLinear_t *SL, int maxIt, double tol, double matSaida[
     tempoResid = timestamp();
 
     tempoPreCond = timestamp() - tempoResid;
-    
-    inicializaSol(x,SL->n);
+
+    inicializaSol(x, SL->n);
     // residuo = b
     copiaVetor(SL->b, resid, SL->n);
     // direcao = residuo
@@ -435,7 +426,7 @@ int gradienteConjugado(SistLinear_t *SL, int maxIt, double tol, double matSaida[
         copiaVetor(x, xAnt, SL->n);
         calcX(x, xAnt, alpha, direc, SL->n);
 
-        double normaMaxRel = normaMaxErroRelativo( x,xAnt, SL->n);
+        double normaMaxRel = normaMaxRelat(x, xAnt, SL->n);
         fprintf(arqSaida, "# iter %d: %.15g \n", it, normaMaxRel);
 
         // calcular novo residuo
@@ -443,7 +434,7 @@ int gradienteConjugado(SistLinear_t *SL, int maxIt, double tol, double matSaida[
         copiaVetor(resid, residAnt, SL->n);
         calcResiduo(residAnt, alpha, SL->A, direc, resid, SL->n);
 
-        // normaMaxErroRelativo
+        // normaMaxRelat
         // if
         if (tol != 0 && tol > normaMaxRel)
         {
@@ -462,7 +453,7 @@ int gradienteConjugado(SistLinear_t *SL, int maxIt, double tol, double matSaida[
         tMedioIter += timestamp() - tIterInicio;
     }
 
-    fprintf(arqSaida, "# residuo: || %.15g || \n", calcularNormaL2Residuo(resid, SL->n));
+    fprintf(arqSaida, "# residuo: || %.15g || \n", normaL2Residuo(resid, SL->n));
 
     // tempo final
     fprintf(arqSaida, "# Tempo PC: %.15g \n", tempoPreCond);
@@ -476,6 +467,4 @@ int gradienteConjugado(SistLinear_t *SL, int maxIt, double tol, double matSaida[
     free(direcAnt);
     free(xAnt);
     free(x);
-
-    return it;
 }

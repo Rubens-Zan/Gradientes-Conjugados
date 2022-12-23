@@ -91,38 +91,38 @@ static inline double generateRandomB(unsigned int k)
 */
 void iniSisLin(SistLinear_t *SL, unsigned int nDiagonais)
 {
-  // Percorre a matriz de coeficiente e o vetor de termos independentes e inicializa as estruturas
-    for (int i = 0; i < SL->n; ++i)
+  for (int i = 0; i < SL->n; ++i)
+  {
+    for (int j = 0; j < SL->n; ++j)
     {
-        for (int j = 0; j < SL->n; ++j)
+      if (i == j)
+        SL->A[i][j] = generateRandomA(i, j, nDiagonais);
+      else if (i > j)
+      {
+
+        int resp = j + (nDiagonais / 2);
+        if (resp >= i)
         {
-            if (i == j)
-                SL->A[i][j] = generateRandomA(i, j, nDiagonais);
-            else if (i > j)
-            {
-
-                int resp = j + (nDiagonais / 2);
-                if (resp >= i)
-                {
-                    SL->A[i][j] = generateRandomA(i, j, nDiagonais);
-                }
-                else
-                    SL->A[i][j] = 0.0;
-            }
-            else
-            {
-
-                int resp = j - (nDiagonais / 2);
-                if (resp <= i)
-                {
-                    SL->A[i][j] = generateRandomA(i, j, nDiagonais);
-                }
-                else
-                    SL->A[i][j] = 0.0;
-            }
+          SL->A[i][j] = generateRandomA(i, j, nDiagonais);
         }
-        SL->b[i] = generateRandomB(nDiagonais);
+        else
+          SL->A[i][j] = 0.0;
+      }
+      else
+      {
+
+        int resp = j - (nDiagonais / 2);
+        if (resp <= i)
+        {
+          SL->A[i][j] = generateRandomA(i, j, nDiagonais);
+        }
+        else
+          SL->A[i][j] = 0.0;
+      }
     }
+    
+    SL->b[i] = generateRandomB(nDiagonais);
+  }
 }
 
 /***********************************************************************/
@@ -173,35 +173,43 @@ void prnMat(double **mat, unsigned int n, unsigned int m)
 }
 
 /**
- * @brief Para que o produto das matrizes gera um vetor VetA[1]
- * 
- * @param vetA 
- * @param vetB 
- * @param n 
+ * @brief - Calcula o produto entre dois vetores que geram um valor
+ * produto = vetA + vetB
+ * @param vetA - Vetor A
+ * @param vetB - Vetor B
+ * @param n - Tamanho do vetor
+ * @return double - Produto dos vetores
  */
-double multiplicaVetores(double *vetA, double *vetB, unsigned int n){
-	double soma = 0;
+double multiplicaVetores(double *vetA, double *vetB, unsigned int n)
+{
+  double produto = 0;
 
-	for(int i=0; i< n;++i){
-        soma = soma + vetA[i] * vetB[i];
- 			// Teste para ver se não foi gerado um NaN ou um número infinito.         
-            if (isnan(soma) || isinf(soma))
-            {
-                fprintf(stderr, "Erro soma(multiplicaVetores): %g é NaN ou +/-Infinito\n", soma);
-                exit(1);
-            }
-	}
-	return soma;
+  for (int i = 0; i < n; ++i)
+  {
+    produto = produto + vetA[i] * vetB[i];
+    // Testa por valores inválidos.
+    if (isnan(produto) || isinf(produto))
+    {
+      fprintf(stderr, "Erro variavel invalida: produto(multiplicaVetores): %g é NaN ou +/-Infinito\n", produto);
+      exit(1);
+    }
+  }
+  return produto;
 }
 
-//////////////////////////
+/**
+ * @brief Copia vetor
+ *
+ * @param a vetor origem
+ * @param b vetor destino
+ * @param n tamanho do vetor
+ */
+void copiaVetor(double *a, double *b, unsigned int n)
+{
+  int i;
 
-
-//Copia um vetor
-void copiaVetor (double *a, double *b, unsigned int N) {
-	int i;
-	
-	for (i = 0; i < N; i++) {
-		b[i] = a[i];
-	}
+  for (i = 0; i < n; i++)
+  {
+    b[i] = a[i];
+  }
 }

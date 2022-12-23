@@ -4,12 +4,10 @@
 Nome: Rubens Zandomenighi Laszlo  GRR:20206147
 
 ## Objetivo 
-
+Implementação dos métodos de resolução de sistemas lineares pelo método do gradiente conjugado, com e sem pré-condicionamento. 
 
 ### Métodos 
-São utilizadas as funções para geração aleatória da matriz, e posteriormente é transformada em diagonal dominante 
-Para amenização de erros, também é transformado o Sistema Linear em, ao início dos métodos : 
-(A^T) * A * x = (A^T) * b
+São utilizadas as funções para geração aleatória da matriz, e posteriormente é transformada em diagonal dominante. 
 
 #### Método com pré condicionador de Jacobi
 
@@ -20,25 +18,26 @@ Sendo M-1 = Matriz diagonal tal que M=D.
 ### Método sem pré condicionamento 
 
 
-### Calculo de tempo e erros
+### Calculo de tempo e normas
 É feito o cálculo do tempo do resíduo, tempo média iteração método e tempo para aplicação dos pré condicionadores. 
-Os métodos para cálculos de erro utilizados são :
+Os métodos para cálculos das normas utilizados são :
 
-calcNormaMaxRel -> (max (|xi - xi-1| / |xi| ),
-seja residuo = b - A * x
-calcErroNormaEuc -> sqrt((residuo)^2)
+normaMaxRelat -> (max (|xi - xi-1| / |xi| )
+normaL2Residuo -> sqrt((residuo)^2)
 
 ## Arquitetura 
-Lista de  Arquivos
      
-    Diretório Principal
+    Diretório Principal rzl20
       |
       |----main.c - Programa principal para execução das funções
+      |----sislin.c - Contém funções para lidar com sistemas lineares
+      |----resolvedorGradConj.c - Contém funções para resolver o gradiente conjugado
       |----utils.c - Contém funções úteis para auxílio na execução, como tratamento de entrada
-      |----opmatrizes.c - Contém funções efetuar operações com matrizes
-      |----sislin.c - Contém funções lidar com o sistema linear
       |----makefile - arquivo para compilação e correlatos
       |----doc - Documentação do projeto
+      |----sislin.h - include
+      |----resolvedorGradConj.h - include
+      |----utils.h - include
 
 ## Compilação 
 
