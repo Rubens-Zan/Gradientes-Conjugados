@@ -206,7 +206,7 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, int maxIt, double tol, double 
         copiaVetor(x, xAnt, SL->n); // xant = x
         calcX(x, xAnt, alpha, direc, SL->n);
 
-        double normaMaxRel = normaMaxErroRelativo(xAnt, x, SL->n);
+        double normaMaxRel = normaMaxErroRelativo(x,xAnt, SL->n);
         fprintf(arqSaida, "# iter %d: %.15g\n", it, normaMaxRel);
         // calcula novo residuo
         copiaVetor(resid, residAnt, SL->n);
@@ -434,7 +434,7 @@ int gradienteConjugado(SistLinear_t *SL, int maxIt, double tol, double matSaida[
         copiaVetor(x, xAnt, SL->n);
         calcX(x, xAnt, alpha, direc, SL->n);
 
-        double normaMaxRel = normaMaxErroRelativo(xAnt, x, SL->n);
+        double normaMaxRel = normaMaxErroRelativo( x,xAnt, SL->n);
         fprintf(arqSaida, "# iter %d: %.15g \n", it, normaMaxRel);
 
         // calcular novo residuo
