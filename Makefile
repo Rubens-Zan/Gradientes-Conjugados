@@ -5,7 +5,7 @@
 
 CC = gcc
 EXEC = cgSolver
-CFLAG = -Wall -g -std=c99 -lm
+CFLAG = -Wall -g
 MODULOS = resolvedorGradConjug \
 	sislin \
 	utils 
@@ -13,6 +13,17 @@ MODULOS = resolvedorGradConjug \
 OBJETOS = main.o $(addsuffix .o,$(MODULOS))
 
 .PHONY: all clean
+lib_sislin.o: lib_sislin.c lib_sislin.h
+	$(CC) $(CFLAG) -c lib_sislin.c -lm
+
+resolvedorGradConjug: resolvedorGradConjug.c resolvedorGradConjug.h
+	$(CC) $(CFLAG) -c resolvedorGradConjug.c -lm
+
+sislin: sislin.c sislin.h
+	$(CC) $(CFLAG) -c sislin.c -lm
+
+utils: utils.c utils.h
+	$(CC) $(CFLAG) -c utils.c -lm
 
 all: CGSOLVER
 

@@ -6,8 +6,6 @@
 #include "utils.h"
 #include <string.h>
 
-
-
 // Alocaçao de matriz em memória.
 SistLinear_t *alocaSisLin(unsigned int n)
 {
@@ -93,35 +91,38 @@ static inline double generateRandomB(unsigned int k)
 */
 void iniSisLin(SistLinear_t *SL, unsigned int nDiagonais)
 {
-  unsigned int n = SL->n;
-  // inicializando sequencia de numeros aleatorios
-  srand(20222);
-
-  // inicializa vetor b
-  for (unsigned int i = 0; i < n; ++i)
-  {
-    SL->b[i] = generateRandomB(nDiagonais);
-  }
-
-  // inicializa a matriz A
-  for (unsigned int i = 0; i < n; ++i)
-  {
-    for (unsigned int j = 0; j < n; ++j)
+  // Percorre a matriz de coeficiente e o vetor de termos independentes e inicializa as estruturas
+    for (int i = 0; i < SL->n; ++i)
     {
-      SL->A[i][j] = generateRandomA(i, j, nDiagonais);
-    }
-  }
+        for (int j = 0; j < SL->n; ++j)
+        {
+            if (i == j)
+                SL->A[i][j] = generateRandomA(i, j, nDiagonais);
+            else if (i > j)
+            {
 
-  // FAZER SER DIAGONAL DOMINANTE
-  //  FAZER O TERMO I,I SER A SOMA DE TUDO
-  for (unsigned int i = 0; i < n; ++i)
-  {
-    SL->A[i][i] = 0.1;
-    for (unsigned int j = 0; j < n; ++j)
-    {
-      SL->A[i][i] += SL->A[i][j];
+                int resp = j + (nDiagonais / 2);
+                if (resp >= i)
+                {
+                    SL->A[i][j] = generateRandomA(i, j, nDiagonais);
+                }
+                else
+                    SL->A[i][j] = 0.0;
+            }
+            else
+            {
+
+                int resp = j - (nDiagonais / 2);
+                if (resp <= i)
+                {
+                    SL->A[i][j] = generateRandomA(i, j, nDiagonais);
+                }
+                else
+                    SL->A[i][j] = 0.0;
+            }
+        }
+        SL->b[i] = generateRandomB(nDiagonais);
     }
-  }
 }
 
 /***********************************************************************/

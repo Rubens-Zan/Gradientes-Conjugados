@@ -8,6 +8,7 @@
 
 int main(int argc, char **argv)
 {
+    srand(20222);
     tComando *comando = (tComando *)malloc(sizeof(tComando));
     tratamentoEntrada(argc, argv, comando);
     SistLinear_t *SL = alocaSisLin(comando->dimensao);
@@ -30,20 +31,6 @@ int main(int argc, char **argv)
     } else {
         gradienteConjugado(SL,comando->nIter,comando->erroMax,matSaida, arqSaida); 
     }
-
-    // SL->A[0][0] = 4;
-    // SL->A[0][1] = 1;
-    // SL->A[1][0] = 1;
-    // SL->A[1][1] = 3;
-
-    // SL->b[0] = 1;
-    // SL->b[1] = 2;
-    // x[0][0] = 2;
-    // x[1][0] = 1;
-
-    // prnSisLin(SL); 
-    // printf("\n"); 
-
 
 	fclose(arqSaida);
     free(comando);
