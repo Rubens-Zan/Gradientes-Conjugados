@@ -21,8 +21,6 @@ void liberaSisLin (SistLinear_t *SL);
 void iniSisLin (SistLinear_t *SL, unsigned int nDiagonais);
 
 //
-void formataSLGradConj(SistLinear_t *SL); 
-
 
 //
 void prnMat (double **mat, unsigned int n, unsigned int m);

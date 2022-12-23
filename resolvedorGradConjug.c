@@ -234,7 +234,7 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, int maxIt, double tol, double 
     // Ajusta tipos iniciais
     // A=(A^T) * A
     // b=(A^T) * b
-    formataSLGradConj(SL);
+    // formataSLGradConj(SL);
     // (M^-1) * A
     // (M^-1) * b
     aplicaPreCondicSL(SL, auxMatJacobi);
@@ -466,7 +466,7 @@ int gradienteConjugado(SistLinear_t *SL, int maxIt, double tol, double matSaida[
 
     tempoResid = timestamp();
     // transforma SL em ax=b em (A^T)Ax = A^t *b
-    formataSLGradConj(SL); // OK
+    // formataSLGradConj(SL); // OK
 
     tempoPreCond = timestamp() - tempoResid;
 
