@@ -15,16 +15,11 @@ typedef struct {
 } SistLinear_t;
 
 
-// Alocaçao e desalocação de matrizes
 SistLinear_t* alocaSisLin (unsigned int n);
 void liberaSisLin (SistLinear_t *SL);
 void iniSisLin (SistLinear_t *SL, unsigned int nDiagonais);
-
-//
-
-//
 void prnMat (double **mat, unsigned int n, unsigned int m);
-// Leitura e impressão de sistemas lineares
+void prnVetorArq(double *v, unsigned int n, FILE *arqSaida);
 void prnSisLin (SistLinear_t *SL);
 void prnVetor (double *vet, unsigned int n);
 double multiplicaVetores(double *vetA, double *vetB, unsigned int n);

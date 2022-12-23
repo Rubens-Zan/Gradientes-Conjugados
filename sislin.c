@@ -151,15 +151,22 @@ void prnVetor(double *v, unsigned int n)
   printf("\n\n");
 }
 
+/**
+ * @brief - Printa o vetor V no arquivo arqSaida
+ * 
+ * @param v - vetor
+ * @param n - tamanho do vetor
+ * @param arqSaida - arquivo de saida
+ */
 void prnVetorArq(double *v, unsigned int n, FILE *arqSaida)
 {
   int i;
   fprintf(arqSaida, "\n");
   for (i = 0; i < n; ++i)
   {
-    fprintf(arqSaida, "%.15g \n", v[i]);
+    fprintf(arqSaida, "%.15g ", v[i]);
   }
-  fprintf(arqSaida, "\n\n");
+  fprintf(arqSaida, "\n");
 }
 
 void prnMat(double **mat, unsigned int n, unsigned int m)

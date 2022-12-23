@@ -229,14 +229,15 @@ void gradienteConjugadoPreCondic(SistLinear_t *SL, int maxIt, double tol, FILE *
         tMedioIter += timestamp() - tIterInicio;
     }
 
-    // A norma euclidiana do resíduo (||r||), onde r = b - Ax
     fprintf(arqSaida, "# residuo: || %.15g || \n", normaL2Residuo(resid, SL->n));
-
     fprintf(arqSaida, "# Tempo PC: %.15g \n", tempoPreCond);
     tMedioIter = tMedioIter / it;
     fprintf(arqSaida, "# Tempo tMedioIter:: %.15g \n", tMedioIter);
     tempoResid = timestamp() - tempoResid;
     fprintf(arqSaida, "# Tempo residuo:: %.15g \n", tempoResid);
+    fprintf(arqSaida, "# \n");
+    fprintf(arqSaida, "%d", SL->n);
+    prnVetorArq(x, SL->n, arqSaida);
 
     free(resid);
     free(residAnt);
@@ -459,6 +460,10 @@ void gradienteConjugado(SistLinear_t *SL, int maxIt, double tol, FILE *arqSaida)
     fprintf(arqSaida, "# Tempo tMedioIter:: %.15g \n", tMedioIter);
     tempoResid = timestamp() - tempoResid;
     fprintf(arqSaida, "# Tempo residuo:: %.15g \n", tempoResid);
+    fprintf(arqSaida, "# \n");
+    fprintf(arqSaida, "%d", SL->n);
+    prnVetorArq(x, SL->n, arqSaida);
+
     free(resid);
     free(residAnt);
     free(direc);
