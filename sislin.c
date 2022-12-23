@@ -2,7 +2,6 @@
 #include <math.h>
 #include <stdlib.h>
 #include <math.h>
-
 #include "sislin.h"
 #include "utils.h"
 #include <string.h>

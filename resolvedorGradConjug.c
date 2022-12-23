@@ -2,7 +2,10 @@
 #include "utils.h"
 #include "resolvedorGradConjug.h"
 #include <stdio.h>
-#include <<stdlib.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+
 
 /***********************************************************************/
 // FUNCOES PARA A RESOLUCAO POR GRADIENTE CONJUGADO
@@ -282,7 +285,7 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, int maxIt, double tol, double 
     }
 
     // A norma euclidiana do resíduo (||r||), onde r = b - Ax
-    fprintf(arqSaida, "# residuo: || %.15g || \n", calcErroNormaEuc(SL->b, SL->A, x, SL->n));
+    fprintf(arqSaida, "# residuo: || %.15g || \n", calcularNormaL2Residuo(resid, SL->n));
 
     fprintf(arqSaida, "# Tempo PC: %.15g \n", tempoPreCond);
     tMedioIter = tMedioIter / it;
@@ -478,7 +481,7 @@ int gradienteConjugado(SistLinear_t *SL, int maxIt, double tol, double matSaida[
         double tIterInicio = timestamp();
 
         // CALCULA APLHA
-        alpha = (multiplicaVetores(resid, resid, SL->n)) / (multiplicaVetor_Vetor(vetorAux, direc, SL->n));
+        alpha = (multiplicaVetores(resid, resid, SL->n)) / (multiplicaVetores(vetorAux, direc, SL->n));
         // calcula novo x
         // x1 = x0 +alpha * p
         copiaVetor(x, xAnt, SL->n);
@@ -511,7 +514,7 @@ int gradienteConjugado(SistLinear_t *SL, int maxIt, double tol, double matSaida[
         tMedioIter += timestamp() - tIterInicio;
     }
 
-    fprintf(arqSaida, "# residuo: || %.15g || \n", calcErroNormaEuc(SL->b, SL->A, x, SL->n));
+    fprintf(arqSaida, "# residuo: || %.15g || \n", calcularNormaL2Residuo(resid, SL->n));
 
     // tempo final
     fprintf(arqSaida, "# Tempo PC: %.15g \n", tempoPreCond);
