@@ -29,6 +29,8 @@ int main(int argc, char **argv)
     if (comando->usarPreCondicionador){
         gradienteConjugadoPreCondic(SL, comando->nIter,comando->erroMax,matSaida,arqSaida);
     } else {
+    printf("USAR CONJUGAD ");
+
         gradienteConjugado(SL,comando->nIter,comando->erroMax,matSaida, arqSaida); 
     }
 

@@ -400,6 +400,7 @@ void calcProxDirecBusca(double *proxDir, double *z, double beta, double *direcAn
  */
 int gradienteConjugado(SistLinear_t *SL, int maxIt, double tol, double matSaida[][2], FILE *arqSaida)
 {
+    printf("AQUIIIII ");
     double tMedioIter, tempoResid, tempoPreCond;
     double alpha, beta;
     double *resid = (double *)malloc(sizeof(double) * SL->n);    // matriz de residuo
