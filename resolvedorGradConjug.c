@@ -7,60 +7,6 @@
 #include <math.h>
 
 
-/***********************************************************************/
-// FUNCOES PARA A RESOLUCAO POR GRADIENTE CONJUGADO
-/**
- * @brief Função para formar Sistema linear para ficar no formato (A^T) * A * x = (A^T) * b, facilita a conversão
- *
- * @param SL
- */
-void formataSLGradConj(SistLinear_t *SL)
-{
-    // A = A^T * A
-    // b = A^T * b
-
-    // CALCULA A^T * b
-    for (int i = 0; i < SL->n; ++i)
-    {
-        for (int j = 0; j < SL->n; ++j)
-        {
-
-            // Bi = Bi + Aij * Bj.
-            SL->b[i] += SL->A[j][i] * SL->b[j];
-
-            // Teste para ver se não foi gerado um NaN ou um número infinito.
-            if (isnan(SL->b[i]) || isinf(SL->b[i]))
-            {
-                fprintf(stderr, "Erro b[i](formataSLGradConj): %g é NaN ou +/-Infinito, Linha: %i, Coluna: %i\n", SL->b[i], i, j);
-                exit(1);
-            }
-        }
-    }
-
-    // Percorre a matriz A
-    for (int i = 0; i < SL->n; ++i)
-    {
-        for (int j = 0; j < SL->n; ++j)
-        {
-            SL->A[i][j] = 0.0;
-            for (int k = 0; k < SL->n; ++k)
-            {
-
-                // Aij = Aij + Aki * Akj. Este cálculo gera a matriz trasposta vezes a matriz original.
-                SL->A[i][j] = SL->A[i][j] + SL->A[k][i] * SL->A[k][j];
-
-                // Teste para ver se não foi gerado um NaN ou um número infinito.
-                if (isnan(SL->A[i][j]) || isinf(SL->A[i][j]))
-                {
-                    fprintf(stderr, "Erro A[i][j](formataSLGradConj): %g é NaN ou +/-Infinito, Linha: %i, Coluna: %i\n", SL->A[i][j], i, j);
-                    exit(1);
-                }
-            }
-        }
-    }
-};
-
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
  * @brief - Calcula alpha parece ok 
@@ -235,10 +181,7 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, int maxIt, double tol, double 
     int it;
 
     inicializaPreCondJacobi(SL, auxMatJacobi);
-    // Ajusta tipos iniciais
-    // A=(A^T) * A
-    // b=(A^T) * b
-    formataSLGradConj(SL);
+ 
     // (M^-1) * A
     // (M^-1) * b
     aplicaPreCondicSL(SL, auxMatJacobi);
@@ -470,8 +413,6 @@ int gradienteConjugado(SistLinear_t *SL, int maxIt, double tol, double matSaida[
     tMedioIter = 0;
 
     tempoResid = timestamp();
-    // transforma SL em ax=b em (A^T)Ax = A^t *b
-    // formataSLGradConj(SL); // OK
 
     tempoPreCond = timestamp() - tempoResid;
     

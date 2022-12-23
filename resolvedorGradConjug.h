@@ -1,4 +1,3 @@
-void formataSLGradConj(SistLinear_t *SL);
 void calcZ(double *z, double *inverse_c, double *residuo, unsigned int size);
 void inicializaPreCondJacobi(SistLinear_t *SL, double *M);
 void aplicaPreCondicSL(SistLinear_t *SL, double *M);
