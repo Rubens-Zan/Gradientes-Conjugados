@@ -391,7 +391,6 @@ void calcProxDirecBusca(double *proxDir, double *z, double beta, double *direcAn
  */
 void gradienteConjugado(SistLinear_t *SL, int maxIt, double tol, FILE *arqSaida)
 {
-    printf("AQUIIIII ");
     double tMedioIter, tempoResid, tempoPreCond;
     double alpha, beta;
     double *resid = (double *)malloc(sizeof(double) * SL->n);    // matriz de residuo
@@ -405,7 +404,7 @@ void gradienteConjugado(SistLinear_t *SL, int maxIt, double tol, FILE *arqSaida)
     tMedioIter = 0;
 
     tempoResid = timestamp();
-
+    // nao usa pre condicionadores 
     tempoPreCond = timestamp() - tempoResid;
 
     inicializaSol(x, SL->n);
@@ -414,13 +413,12 @@ void gradienteConjugado(SistLinear_t *SL, int maxIt, double tol, FILE *arqSaida)
     // direcao = residuo
     copiaVetor(resid, direc, SL->n);
 
-    // for
     for (it = 0; it < maxIt; ++it)
     {
         double tIterInicio = timestamp();
 
-        // CALCULA APLHA
-        alpha = (multiplicaVetores(resid, resid, SL->n)) / (multiplicaVetores(vetorAux, direc, SL->n));
+        // calcula alpha
+        alpha = calcAlpha(resid,direc,SL);
         // calcula novo x
         // x1 = x0 +alpha * p
         copiaVetor(x, xAnt, SL->n);
