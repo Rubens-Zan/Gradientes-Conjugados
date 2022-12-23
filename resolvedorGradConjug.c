@@ -230,8 +230,7 @@ void gradienteConjugadoPreCondic(SistLinear_t *SL, int maxIt, double tol, FILE *
     double *z = (double *)malloc(sizeof(double) * SL->n);        // matriz de z
     double *zAnt = (double *)malloc(sizeof(double) * SL->n);     // matriz de z antigo
     double *x = (double *)malloc(sizeof(double) * SL->n);        // matriz de soluções
-
-    double *auxMatJacobi = (double *)malloc(sizeof(double) * SL->n);
+    double *matJacobiInvert = (double *)malloc(sizeof(double) * SL->n);
 
     double tMedioIter, tempoResid, tempoPreCond;
     tMedioIter = 0;
@@ -239,17 +238,17 @@ void gradienteConjugadoPreCondic(SistLinear_t *SL, int maxIt, double tol, FILE *
 
     int it;
 
-    inicializaPreCondJacobi(SL, auxMatJacobi);
+    inicializaPreCondJacobi(SL, matJacobiInvert);
 
     // (M^-1) * A
     // (M^-1) * b
-    aplicaPreCondicSL(SL, auxMatJacobi);
+    aplicaPreCondicSL(SL, matJacobiInvert);
     tempoPreCond = timestamp() - tempoResid;
     inicializaSol(x, SL->n);
     // residuo = b
     copiaVetor(SL->b, resid, SL->n); // como x inicial igual a 0, desconsidero o r = b - (A * x)
     // calcula z
-    calcZ(z, auxMatJacobi, resid, SL->n);
+    calcZ(z, matJacobiInvert, resid, SL->n);
     // direc = z
     copiaVetor(z, direc, SL->n);
 
@@ -279,7 +278,7 @@ void gradienteConjugadoPreCondic(SistLinear_t *SL, int maxIt, double tol, FILE *
         // z0 = z
         copiaVetor(z, zAnt, SL->n);
         // calcula z
-        calcZ(z, auxMatJacobi, resid, SL->n);
+        calcZ(z, matJacobiInvert, resid, SL->n);
         // beta = rt * z / rtant *zant
         beta = calcBetaPreCond(resid, residAnt, z, zAnt, SL->n);
         // calcula prox direcao
@@ -307,6 +306,7 @@ void gradienteConjugadoPreCondic(SistLinear_t *SL, int maxIt, double tol, FILE *
     free(x);
     free(z);
     free(zAnt);
+    free(matJacobiInvert);
 }
 
 /******************FUNCOES AUXILIAR SEM PRE CONDICIONADOR**********************************/
@@ -418,7 +418,6 @@ void gradienteConjugado(SistLinear_t *SL, int maxIt, double tol, FILE *arqSaida)
     double *direcAnt = (double *)malloc(sizeof(double) * SL->n); // matriz de direcao anterior
     double *xAnt = (double *)malloc(sizeof(double) * SL->n);     // matriz de chute anterior
     double *x = (double *)malloc(sizeof(double) * SL->n);
-    double *vetorAux = (double *)malloc(sizeof(double) * SL->n);
     int it = 0;
     tMedioIter = 0;
 

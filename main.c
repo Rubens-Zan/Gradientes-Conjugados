@@ -25,7 +25,6 @@ int main(int argc, char **argv)
 
     iniSisLin(SL, comando->nDiagonais);
 
-    // double *matPreConj = (double *) malloc(sizeof(double)* SL->n); 
     if (comando->usarPreCondicionador){
         gradienteConjugadoPreCondic(SL, comando->nIter,comando->erroMax,arqSaida);
     } else {
