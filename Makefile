@@ -6,7 +6,7 @@
 CC = gcc
 EXEC = cgSolver
 CFLAG = -Wall -g -std=c99 -lm
-MODULOS = resolverGradConj \
+MODULOS = resolvedorGradConjug \
 	sislin \
 	utils 
  

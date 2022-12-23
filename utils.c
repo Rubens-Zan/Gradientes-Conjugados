@@ -5,6 +5,11 @@
 
 #include <time.h>
 #include "utils.h"
+#include "sislin.h"
+#include "math.h"
+
+// Valor absoluto de um número. Alternativa ao uso da função 'fabs()'
+#define ABS(num)  ((num) < 0.0 ? -(num) : (num))
 
 double timestamp(void)
 {
@@ -95,9 +100,34 @@ double calcErroNormaEuc(double *b, double **A, double *x, int n){
   double normaEucl = 0;
   multiplicaMatriz_Vetor(A,x,vAux, n);
   subtraiVetor(b,vAux, vAux,n); // vAux = b - A * x
-  normaEucl = sqrt(multiplicaVetor_Vetor(vAux, vAux, n)); // normaEucl = sqrt((b - A * x)^2)
+  normaEucl = sqrt(multiplicaVetores(vAux, vAux, n)); // normaEucl = sqrt((b - A * x)^2)
 
   return normaEucl;
+}
+
+real_t normaMaxErroRelativo(real_t *x, real_t *xAnt, unsigned int n)
+{
+
+    real_t maior = ABS(x[0] - xAnt[0]) / ABS(x[0]);
+
+    //Percorre o vetor de soluções,
+    for (int i = 1; i < n; ++i)
+    {
+        // acha o maior erro relativo e
+        if (ABS(x[i] - xAnt[i]) / ABS(x[i]) > maior)
+        {
+            maior = ABS(x[i] - xAnt[i]) / ABS(x[i]);      
+            // Teste para ver se não foi gerado um NaN ou um número infinito    
+            if (isnan(maior) || isinf(maior))
+            {
+                fprintf(stderr, "Erro maior(normaMaxErroRelativo): %g é NaN ou +/-Infinito\n", maior);
+                exit(1);
+            }
+        }
+    }
+
+    // Retorna ao final o maior erro absoluto.
+    return maior;
 }
 
 double calcNormaMaxRel(double *xAnt,double *x, int n){
@@ -110,4 +140,5 @@ double calcNormaMaxRel(double *xAnt,double *x, int n){
 
   return normaMaxRel; 
 }
+
 

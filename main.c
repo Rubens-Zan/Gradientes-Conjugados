@@ -3,7 +3,7 @@
 
 #include "utils.h"
 #include "sislin.h"
-#include "resolverGradConj.h"
+#include "resolvedorGradConjug.h"
 
 
 int main(int argc, char **argv)
