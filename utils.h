@@ -8,6 +8,9 @@ typedef struct tComando {
 } tComando;
 double calcNormaMaxRel(double *xAnt,double *x, int n);
 double normaMaxErroRelativo(double *x, double *xAnt, unsigned int n);
+
+double calcularNormaL2Residuo( double *residuo, unsigned int n);
+
 double timestamp(void);
 void tratamentoEntrada(int argc, char **argv, tComando *comando);
 double ** alocarMatriz(int lin,int col); 

@@ -1,6 +1,8 @@
 #include "sislin.h"
 #include "utils.h"
 #include "resolvedorGradConjug.h"
+#include <stdio.h>
+#include <<stdlib.h>
 
 /***********************************************************************/
 // FUNCOES PARA A RESOLUCAO POR GRADIENTE CONJUGADO

@@ -87,22 +87,32 @@ void inicializarMatriz(double **vet, int lin,int col){
 
 
 /******************NORMAS**********************************/
-/**
- * @brief 
- *  r = b - Ax
- * @param b 
- * @param A 
- * @param x 
- * @return double 
- */
-double calcErroNormaEuc(double *b, double **A, double *x, int n){
-  double *vAux = (double *)malloc(sizeof(double) * n);     // matriz de chute anterior
-  double normaEucl = 0;
-  multiplicaMatriz_Vetor(A,x,vAux, n);
-  subtraiVetor(b,vAux, vAux,n); // vAux = b - A * x
-  normaEucl = sqrt(multiplicaVetores(vAux, vAux, n)); // normaEucl = sqrt((b - A * x)^2)
 
-  return normaEucl;
+double calcularNormaL2Residuo( double *residuo, unsigned int n)
+{
+
+    double soma = 0.0;
+    double raiz;
+
+    // Pecorre o vetor de soluções
+    for (int i = 0; i < n; ++i) {
+
+        // Soma o quadrado dos elementos das soluções
+        soma = soma + residuo[i]*residuo[i];
+
+        // Teste para ver se não foi gerado um NaN ou um número infinito
+        if (isnan(soma) || isinf(soma))
+        {
+            fprintf(stderr, "Erro soma(calcularNormaL2Residuo): %g é NaN ou +/-Infinito\n", soma);
+            exit(1);
+        }
+
+    }
+    raiz = sqrt(soma);
+
+    // Retorna a raíz quadrada da soma.
+    return raiz;
+
 }
 
 double normaMaxErroRelativo(double *x, double *xAnt, unsigned int n)

@@ -10,7 +10,7 @@ MODULOS = resolvedorGradConjug \
 	sislin \
 	utils 
  
-OBJETOS = main.o $(addsuffix .o,$(MODULOS) $(CFLAG))
+OBJETOS = main.o $(addsuffix .o,$(MODULOS))
 
 .PHONY: all clean
 
