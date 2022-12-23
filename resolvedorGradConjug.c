@@ -197,6 +197,10 @@ void aplicaPreCondicSL(SistLinear_t *SL, double *M)
     }
 }
 
+void inicializaSol(double *x, unsigned int n){
+    for (int i=0;i < n;++i)
+        x[i]=0;
+}
 /******************FUNCOES GRADIENTE CONJUGADO E PRE CONJUGADO**********************************/
 
 /**
@@ -234,11 +238,12 @@ int gradienteConjugadoPreCondic(SistLinear_t *SL, int maxIt, double tol, double 
     // Ajusta tipos iniciais
     // A=(A^T) * A
     // b=(A^T) * b
-    // formataSLGradConj(SL);
+    formataSLGradConj(SL);
     // (M^-1) * A
     // (M^-1) * b
     aplicaPreCondicSL(SL, auxMatJacobi);
     tempoPreCond = timestamp() - tempoResid;
+    inicializaSol(x,SL->n);
     // residuo = b
     copiaVetor(SL->b, resid, SL->n); // como x inicial igual a 0, desconsidero o r = b - (A * x)
     // calcula z
@@ -469,7 +474,8 @@ int gradienteConjugado(SistLinear_t *SL, int maxIt, double tol, double matSaida[
     // formataSLGradConj(SL); // OK
 
     tempoPreCond = timestamp() - tempoResid;
-
+    
+    inicializaSol(x,SL->n);
     // residuo = b
     copiaVetor(SL->b, resid, SL->n);
     // direcao = residuo

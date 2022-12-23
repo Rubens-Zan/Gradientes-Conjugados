@@ -185,11 +185,11 @@ double multiplicaVetores(double *vetA, double *vetB, unsigned int n){
 	for(int i=0; i< n;++i){
         soma = soma + vetA[i] * vetB[i];
  			// Teste para ver se não foi gerado um NaN ou um número infinito.         
-            // if (isnan(soma) || isinf(soma))
-            // {
-            //     fprintf(stderr, "Erro soma(multiplicaVetores): %g é NaN ou +/-Infinito\n", soma);
-            //     exit(1);
-            // }
+            if (isnan(soma) || isinf(soma))
+            {
+                fprintf(stderr, "Erro soma(multiplicaVetores): %g é NaN ou +/-Infinito\n", soma);
+                exit(1);
+            }
 	}
 	return soma;
 }
