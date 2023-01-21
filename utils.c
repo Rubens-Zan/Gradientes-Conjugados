@@ -127,11 +127,11 @@ double normaL2Residuo( double *residuo, unsigned int n)
  * @param n - tamanho do vetor
  * @return double 
  */
-double normaMaxRelat(double *x, double *xAnt, unsigned int n)
+double normaMaxRelat(double *x, double *xAnt, unsigned int n, double *maiorErroAbs)
 {
 
     double maiorErro = ABS(x[0] - xAnt[0]) / ABS(x[0]);
-
+    *maiorErroAbs = ABS(x[0] - xAnt[0]);
     for (int i = 1; i < n; ++i)
     {
         if (ABS(x[i] - xAnt[i]) / ABS(x[i]) > maiorErro)
@@ -143,6 +143,9 @@ double normaMaxRelat(double *x, double *xAnt, unsigned int n)
                 fprintf(stderr, "Erro variavel invalida: maiorErro(normaMaxRelat): %g é NaN ou +/-Infinito\n", maiorErro);
                 exit(1);
             }
+
+            if (ABS(x[i] - xAnt[i] ) > *maiorErroAbs)
+                *maiorErroAbs = ABS(x[i] - xAnt[i]);
         }
     }
 

@@ -83,44 +83,47 @@ static inline double generateRandomB(unsigned int k)
 
 /**
  * @brief - Inicia o sistema linear e aplica as propriedades para garantir a convergência
- * 
+ *
  * @param SL - Sistema linear a ser iniciado
  * @param nDiagonais - Numero de diagonais
  */
 void iniSisLin(SistLinear_t *SL, unsigned int nDiagonais)
 {
   // Matriz é simétrica e positiva definida
-  
-  for (int i = 0; i < SL->n; ++i)
-  {
-    for (int j = 0; j < SL->n; ++j)
+
+  // Percorre a matriz de coeficiente e o vetor de termos independentes e inicializa as estruturas
+    for (int i = 0; i < SL->n; ++i)
     {
-      if (i == j)
-        SL->A[i][j] = generateRandomA(i, j, nDiagonais);
-      else if (i < j)
-      {
-        int aux = j - (nDiagonais / 2);
-        if (aux <= i)
+        for (int j = 0; j < SL->n; ++j)
         {
-          SL->A[i][j] = generateRandomA(i, j, nDiagonais);
+            if (i == j)
+                SL->A[i][j] = generateRandomA(i, j, nDiagonais);
+            else if (i > j)
+            {
+
+                int resp = j + (nDiagonais / 2);
+                if (resp >= i)
+                {
+                    SL->A[i][j] = generateRandomA(i, j, nDiagonais);
+                }
+                else
+                    SL->A[i][j] = 0.0;
+            }
+            else
+            {
+
+                int resp = j - (nDiagonais / 2);
+                if (resp <= i)
+                {
+                    SL->A[i][j] = generateRandomA(i, j, nDiagonais);
+                }
+                else
+                    SL->A[i][j] = 0.0;
+            }
         }
-        else
-          SL->A[i][j] = 0.0;
-      }
-      else
-      {
-        int aux = j + (nDiagonais / 2);
-        if (aux >= i)
-        {
-          SL->A[i][j] = generateRandomA(i, j, nDiagonais);
-        }
-        else
-          SL->A[i][j] = 0.0;
-      }
+        SL->b[i] = generateRandomB(nDiagonais);
     }
 
-    SL->b[i] = generateRandomB(nDiagonais);
-  }
 }
 
 /***********************************************************************/
@@ -216,5 +219,55 @@ void copiaVetor(double *a, double *b, unsigned int n)
   for (i = 0; i < n; i++)
   {
     b[i] = a[i];
+  }
+}
+
+/**
+ * @brief - Copía a matriz A para a matriz b
+ *
+ * @param A - Matriz fonte
+ * @param B - - Matriz destino
+ * @param n - Tamanho na matriz Anxn
+ */
+void copiaMatriz(double **A, double **B, unsigned int n)
+{
+  // Percorre a matrizes e copia o valor da origem para o destino
+  for (int i = 0; i < n; ++i)
+  {
+    for (int j = 0; j < n; ++j)
+    {
+      B[i][j] = A[i][j];
+    }
+  }
+}
+
+void calcularAtxB(SistLinear_t *SL, double *b)
+{
+
+  // Percorre a matriz de coeficientes e os termos independentes.
+  for (int i = 0; i < SL->n; ++i)
+  {
+    for (int j = 0; j < SL->n; ++j)
+    {
+      b[i] += SL->A[j][i] * SL->b[j];
+    }
+  }
+}
+
+void calcularMatrizAtxA(SistLinear_t *SL, double **A)
+{
+
+  for (int i = 0; i < SL->n; ++i)
+  {
+    for (int j = 0; j < SL->n; ++j)
+    {
+      A[i][j] = 0.0;
+      for (int k = 0; k < SL->n; ++k)
+      {
+        // Aij = Aij + Aki*Akj. Este cálculo gera a matriz trasposta vezes a matriz original.
+        A[i][j] = A[i][j] + SL->A[k][i] * SL->A[k][j];
+
+      }
+    }
   }
 }

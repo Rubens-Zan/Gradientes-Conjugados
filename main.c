@@ -8,13 +8,13 @@
 
 int main(int argc, char **argv)
 {
-    srand(20222);
     tComando *comando = (tComando *)malloc(sizeof(tComando));
     tratamentoEntrada(argc, argv, comando);
     SistLinear_t *SL = alocaSisLin(comando->dimensao);
     // SistLinear_t *SL = alocaSisLin(2);
     FILE *arqSaida;
-	double matSaida[comando->nIter+1][2];
+    
+    srand(20222);
 
 	arqSaida = fopen(comando->saida,"w+");
     
