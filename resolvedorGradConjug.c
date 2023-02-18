@@ -31,11 +31,11 @@ void calculaResiduoOriginal(double**A,  double*b, double *x, int n,double *resid
             soma = soma + A[i][j] * x[j];
 
             // (Teste para ver se não foi gerado um NaN ou um número infinito)
-            if (isnan(soma) || isinf(soma))
-            {
-                fprintf(stderr, "Erro soma(calculaResiduoOriginal): %g é NaN ou +/-Infinito\n", soma);
-                exit(1);
-            } 
+            // if (isnan(soma) || isinf(soma))
+            // {
+            //     fprintf(stderr, "Erro soma(calculaResiduoOriginal): %g é NaN ou +/-Infinito\n", soma);
+            //     exit(1);
+            // } 
         }
         //e tira do resíduo.
         residuo[i] = b[i] - soma;
@@ -105,11 +105,11 @@ void inicializaPreCondJacobi(SistLinear_t *SL, double *M)
     for (int i = 0; i < SL->n; ++i)
     {
         M[i] = (double)1 / SL->A[i][i]; // gera vetor com diagonais do SL
-        if (isnan(M[i]) || isinf(M[i]))
-        {
-            fprintf(stderr, "Erro M[i](inicializaPreCondJacobi): %g é NaN ou +/-Infinito, Linha: %i\n", M[i], i);
-            exit(1);
-        }
+        // if (isnan(M[i]) || isinf(M[i]))
+        // {
+        //     fprintf(stderr, "Erro M[i](inicializaPreCondJacobi): %g é NaN ou +/-Infinito, Linha: %i\n", M[i], i);
+        //     exit(1);
+        // }
     }
 }
 
@@ -173,11 +173,11 @@ double calcAlphaPreCond(double *resid, double **A, double *p, double *z, int n)
             soma = soma + A[i][j] * p[j];
 
             // Teste para ver se não foi gerado um NaN ou um número infinito
-            if (isnan(soma) || isinf(soma))
-            {
-                fprintf(stderr, "Erro soma(calcularDenominadorEscalarA): %g é NaN ou +/-Infinito\n", soma);
-                exit(1);
-            }
+            // if (isnan(soma) || isinf(soma))
+            // {
+            //     fprintf(stderr, "Erro soma(calcularDenominadorEscalarA): %g é NaN ou +/-Infinito\n", soma);
+            //     exit(1);
+            // }
         }
         // O iésimo elemento do vetor resultante recebe soma.
         pTxA[i] = soma;
@@ -190,19 +190,19 @@ double calcAlphaPreCond(double *resid, double **A, double *p, double *z, int n)
     {
         pTxAxP = pTxAxP + p[i] * pTxA[i];
         // Teste para ver se não foi gerado um NaN ou um número infinito
-        if (isnan(pTxAxP) || isinf(pTxAxP)){
-            fprintf(stderr, "Erro pTxAxP(calcAlphaPreCond): %g é NaN ou +/-Infinito\n", pTxAxP);
-            exit(1);
-        }
+        // if (isnan(pTxAxP) || isinf(pTxAxP)){
+        //     fprintf(stderr, "Erro pTxAxP(calcAlphaPreCond): %g é NaN ou +/-Infinito\n", pTxAxP);
+        //     exit(1);
+        // }
     }
 
     alpha = residTxZ / pTxAxP;
     // Verificação se resultou em NaN ou +/- infinito
-    if (isnan(alpha) || isinf(alpha))
-    {
-        fprintf(stderr, "Erro variavel invalida: alpha(calcAlphaPreCond): %g é NaN ou +/-Infinito\n", alpha);
-        exit(1);
-    }
+    // if (isnan(alpha) || isinf(alpha))
+    // {
+    //     fprintf(stderr, "Erro variavel invalida: alpha(calcAlphaPreCond): %g é NaN ou +/-Infinito\n", alpha);
+    //     exit(1);
+    // }
     free(pTxA);
 
     return alpha;
@@ -228,11 +228,11 @@ double calcBetaPreCond(double *resid, double *residAnt, double *z, double *zAnt,
 
     beta = residTxZ / zAntxResidAnt;
     // Verificação se resultou em NaN ou +/- infinito
-    if (isnan(beta) || isinf(beta))
-    {
-        fprintf(stderr, "Erro variavel invalida: beta(calcbetaPreCond): %g é NaN ou +/-Infinito\n", beta);
-        exit(1);
-    }
+    // if (isnan(beta) || isinf(beta))
+    // {
+    //     fprintf(stderr, "Erro variavel invalida: beta(calcbetaPreCond): %g é NaN ou +/-Infinito\n", beta);
+    //     exit(1);
+    // }
     return beta;
 }
 
@@ -420,11 +420,11 @@ double calcAlpha(double *resid, double *direc, SistLinear_t *SL)
             totalIDirecXa = totalIDirecXa + SL->A[i][j] * direc[j];
 
             // Testa valores inválidos
-            if (isnan(totalIDirecXa) || isinf(totalIDirecXa))
-            {
-                fprintf(stderr, "Erro variavel invalida: totalIDirecXa(calcAlpha): %g é NaN ou +/-Infinito\n", totalIDirecXa);
-                exit(1);
-            }
+            // if (isnan(totalIDirecXa) || isinf(totalIDirecXa))
+            // {
+            //     fprintf(stderr, "Erro variavel invalida: totalIDirecXa(calcAlpha): %g é NaN ou +/-Infinito\n", totalIDirecXa);
+            //     exit(1);
+            // }
         }
         vetDirecxA[i] = totalIDirecXa;
     }
@@ -437,11 +437,11 @@ double calcAlpha(double *resid, double *direc, SistLinear_t *SL)
     alpha = residTxresid / direcTxAxDirec;
     // Testa valores inválidos
 
-    if (isnan(direcTxAxDirec) || isinf(direcTxAxDirec))
-    {
-        fprintf(stderr, "Erro variavel invalida: direcTxAxDirec(calcAlpha): %g é NaN ou +/-Infinito\n", direcTxAxDirec);
-        exit(1);
-    }
+    // if (isnan(direcTxAxDirec) || isinf(direcTxAxDirec))
+    // {
+    //     fprintf(stderr, "Erro variavel invalida: direcTxAxDirec(calcAlpha): %g é NaN ou +/-Infinito\n", direcTxAxDirec);
+    //     exit(1);
+    // }
     free(vetDirecxA);
     return alpha;
 }

@@ -196,11 +196,11 @@ double multiplicaVetores(double *vetA, double *vetB, unsigned int n)
   {
     produto = produto + vetA[i] * vetB[i];
     // Testa valores inválidos.
-    if (isnan(produto) || isinf(produto))
-    {
-      fprintf(stderr, "Erro variavel invalida: produto(multiplicaVetores): %g é NaN ou +/-Infinito\n", produto);
-      exit(1);
-    }
+    // if (isnan(produto) || isinf(produto))
+    // {
+    //   fprintf(stderr, "Erro variavel invalida: produto(multiplicaVetores): %g é NaN ou +/-Infinito\n", produto);
+    //   exit(1);
+    // }
   }
   return produto;
 }
