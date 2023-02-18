@@ -3,9 +3,11 @@
 # GRR 20206147 
 
 
-CC = gcc
+CC = gcc -g
 EXEC = cgSolver
-CFLAG = -Wall -std=c99 -lm -O3 -mavx -march=native -DLIKWID_PERFMON -I/home/soft/likwid/include  
+CFLAG =-std=c99 -lm -O3 -mavx -march=native -DLIKWID_PERFMON -I/home/soft/likwid/include  
+LFLAGS = -lm -L${LIKWID_HOME}/lib -llikwid
+
 MODULOS = sislin \
 	utils \
 	resolvedorGradConjug 
@@ -14,10 +16,14 @@ OBJETOS = main.o $(addsuffix .o,$(MODULOS))
 
 .PHONY: all clean
 
-all: CGSOLVER
+%.o: %.c %.h
+	$(CC) $(CFLAGS) -c $<
 
-CGSOLVER: $(OBJETOS)
-	$(CC) -o $(EXEC) $(OBJETOS) $(CFLAG)
+all: ${EXEC}
+${EXEC}: ${EXEC}.o
+${EXEC}: ${OBJETOS}
+	$(CC) ${CFLAGS} -O $@ $^ $(LFLAGS)
+
 
 clean:
 	$(RM) $(OBJETOS) $(EXEC)
