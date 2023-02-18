@@ -5,7 +5,7 @@
 
 CC = gcc
 EXEC = cgSolver
-CFLAG = -Wall -std=c99 -lm -O3 -mavx -march=native
+CFLAG = -Wall -std=c99 -lm -O3 -mavx -march=native -DLIKWID_PERFMON -I/home/soft/likwid/include  
 MODULOS = sislin \
 	utils \
 	resolvedorGradConjug 
