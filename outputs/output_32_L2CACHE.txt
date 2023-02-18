@@ -151,9 +151,9 @@
 # iter 148: ||-nan||
 # iter 149: ||-nan||
 # residuo: || -nan || 
-# Tempo PC: 2.88570008706301e-05 
-# Tempo iter: 1.30814053894331e-06 
-# Tempo residuo: 0.000231682002777234 
+# Tempo PC: 2.89379968307912e-05 
+# Tempo iter: 1.30767351947725e-06 
+# Tempo residuo: 0.000305859008221887 
 # 
 32
 -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan 
