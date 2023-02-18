@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <likwid.h>
 
 
 
@@ -316,6 +317,7 @@ void gradienteConjugadoPreCondic(SistLinear_t *SL, int maxIt, double tol, FILE *
     // direc = z
     copiaVetor(z, direc, SL->n);
 
+    LIKWID_MARKER_START ("ITERACAO_METODO");
     for (it = 0; it < maxIt; ++it)
     {
         double tIterInicio = timestamp();
@@ -353,13 +355,17 @@ void gradienteConjugadoPreCondic(SistLinear_t *SL, int maxIt, double tol, FILE *
 
         tMedioIter += timestamp() - tIterInicio;
     }
+    LIKWID_MARKER_STOP ("ITERACAO_METODO");
 
     // restaura A e b originais
     copiaMatriz(SL->A,Aoriginal, SL->n);
     copiaVetor(SL->b, boriginal, SL->n); 
 
     tempoResid = timestamp();
+    LIKWID_MARKER_START ("CALCULA_RESIDUO");
     calculaResiduoOriginal(SL->A, SL->b, x, SL->n, resid);
+    LIKWID_MARKER_STOP ("CALCULA_RESIDUO");
+    
     fprintf(arqSaida, "# residuo: || %.15g || \n", normaL2Residuo(resid, SL->n));
     tempoResid = timestamp() - tempoResid; 
 

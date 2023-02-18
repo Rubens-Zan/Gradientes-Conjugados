@@ -5,7 +5,7 @@
 
 CC = gcc
 EXEC = cgSolver
-CFLAG = -Wall -std=c99 -lm
+CFLAG = -Wall -std=c99 -lm -O3 -mavx -march=native
 MODULOS = sislin \
 	utils \
 	resolvedorGradConjug 

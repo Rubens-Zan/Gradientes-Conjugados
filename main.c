@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <likwid.h>
 #include "utils.h"
 #include "sislin.h"
 #include "resolvedorGradConjug.h"
@@ -8,6 +8,8 @@
 
 int main(int argc, char **argv)
 {
+    LIKWID_MARKER_INIT;
+
     tComando *comando = (tComando *)malloc(sizeof(tComando));
     tratamentoEntrada(argc, argv, comando);
     SistLinear_t *SL = alocaSisLin(comando->dimensao);
@@ -34,5 +36,6 @@ int main(int argc, char **argv)
 	fclose(arqSaida);
     free(comando);
     liberaSisLin(SL);
+    LIKWID_MARKER_CLOSE;
     return 0;
 }
