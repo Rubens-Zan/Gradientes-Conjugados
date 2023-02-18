@@ -3,27 +3,34 @@
 # GRR 20206147 
 
 
+PROG   = cgSolver
+
 CC = gcc -g
-EXEC = cgSolver
-CFLAG =-std=c99 -lm -O3 -mavx -march=native -DLIKWID_PERFMON -I/home/soft/likwid/include  
+OBJS = resolvedorGradConjug.o sislin.o utils.o
+
+CFLAGS = -O3 -mavx2 -march=native -DLIKWID_PERFMON -I${LIKWID_INCLUDE}
 LFLAGS = -lm -L${LIKWID_HOME}/lib -llikwid
 
-MODULOS = sislin \
-	utils \
-	resolvedorGradConjug 
- 
-OBJETOS = main.o $(addsuffix .o,$(MODULOS))
-
-.PHONY: all clean
+.PHONY: all debug clean limpa purge faxina
 
 %.o: %.c %.h
 	$(CC) $(CFLAGS) -c $<
 
-all: ${EXEC}
-${EXEC}: ${EXEC}.o
-${EXEC}: ${OBJETOS}
-	$(CC) ${CFLAGS} -O $@ $^ $(LFLAGS)
+all: $(PROG)
 
+debug:         CFLAGS += -DDEBUG
+debug:         $(PROG)
 
-clean:
-	$(RM) $(OBJETOS) $(EXEC)
+$(PROG):  $(PROG).o
+
+$(PROG): $(OBJS) 
+	$(CC) $(CFLAGS) -o $@ $^ $(LFLAGS)
+
+clean limpa:
+	@echo "Limpando ...."
+	@rm -f *~ *.bak *.tmp
+
+purge faxina:   clean
+	@echo "Faxina ...."
+	@rm -f  $(PROG) *.o core a.out
+	@rm -f *.png marker.out *.log
