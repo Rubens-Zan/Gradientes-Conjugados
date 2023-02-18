@@ -105,11 +105,11 @@ double normaL2Residuo( double *residuo, unsigned int n)
         soma = soma + residuo[i]*residuo[i];
 
         // Testa valores inválidos
-        if (isnan(soma) || isinf(soma))
-        {
-            fprintf(stderr, "Erro variavel invalida: soma(normaL2Residuo): %g é NaN ou +/-Infinito\n", soma);
-            exit(1);
-        }
+        // if (isnan(soma) || isinf(soma))
+        // {
+        //     fprintf(stderr, "Erro variavel invalida: soma(normaL2Residuo): %g é NaN ou +/-Infinito\n", soma);
+        //     exit(1);
+        // }
 
     }
     raiz = sqrt(soma);
