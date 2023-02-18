@@ -1,0 +1,8 @@
+#rzl20 Rubens Zandomenighi Laszlo 
+# 
+# iter 0: 1
+# iter 1: 1.80702276402042e-16
+# residuo: || 0 || 
+# Tempo PC: 7.00005330145359e-07 
+# Tempo tMedioIter:: 1.79099733941257e-05 
+# Tempo residuo:: 2.32799793593585e-05 
