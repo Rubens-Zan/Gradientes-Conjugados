@@ -10,6 +10,7 @@ do
     for k in $METRICA
     do
         likwid-perfctr -C 3 -g ${k} -m -O ./cgSolver -n ${n} -k 7 -p 1 -i 150 -o outputs/output_${n}_${k}.txt > logs/${k}_${n}.log
+    	echo "Terminei" ${n} ${k}
     done
 done
 

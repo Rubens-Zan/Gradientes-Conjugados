@@ -378,7 +378,7 @@ void gradienteConjugadoPreCondic(SistLinear_t *SL, int maxIt, double tol, FILE *
     fprintf(arqSaida, "%d", SL->n);
     prnVetorArq(x, SL->n, arqSaida);
 
-     liberarMatriz(Aoriginal);
+    liberarMatriz(Aoriginal);
     free(boriginal); 
     liberarMatriz(novoA);
     free(novoB); 
